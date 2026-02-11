@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Apply Pilot</title>
+	<!-- Include local Bootstrap CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+
+	<!-- Tailwind -->
+	<!-- <script src="https://cdn.tailwindcss.com"></script> -->
+
+	<!-- Font -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+	<!-- Icons -->
+	<link
+		rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+	/>
+
+	<!-- Include local Custom CSS -->
+	<link rel="stylesheet" href="popup.css"> </head>
+
+<body>
+	<div id="main" class="container p-3">
+		<h2 class="text-center mb-3">Apply Pilot</h2>
+		
+		<div id="ats" style="display:block;">
+			<button id="run" class="btn btn-primary" style="display: block; margin-left: auto; margin-right: auto; padding: 8px 80px;">START</button>
+			<p id="status" class="mt-2 text-center text-muted"></p>
+
+			<div class="d-flex align-items-center justify-content-center mt-2 mb-2">
+				<div class="form-check form-switch" style="min-height: 0;">
+					<input
+					class="form-check-input"
+					type="checkbox"
+					id="autofillEnabled"
+					style="cursor: pointer;"
+					/>
+				</div>
+				<label for="autofillEnabled" class="form-label mb-0">
+					Autofill Enable
+				</label>
+			</div>
+
+			<div id="automation-status"></div>
+		</div>
+		
+		
+		
+		<div id="jobboard" style="display:none;">
+
+			<hr />
+
+		</div>
+	</div>
+	<script type="module" src="popup.js"></script>
+</body>
+
+</html>

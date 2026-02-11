@@ -1,0 +1,63 @@
+# =========================
+# Operating System Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Node.js
+# =========================
+node_modules/
+dist/
+build/
+.next/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Python
+# =========================
+venv_applypilot/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+.env.*
+*.sqlite3
+
+# =========================
+# Browser Extension / Build
+# =========================
+*.zip
+*.crx
+dist/
+
+# =========================
+# Uploaded / User Data (never push)
+# =========================
+web/uploads/
+server/credentials/
+server/tokens/
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# Logs / Misc
+# =========================
+*.log
+*.tmp
+*.cache
+
+# =========================
+# Keep example env
+# =========================
+!.env.example

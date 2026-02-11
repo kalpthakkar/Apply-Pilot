@@ -1,0 +1,432 @@
+{
+  "email": "kalpthakkar2001@gmail.com",
+  "username": "kalpthakkar",
+  "password": "K41p@2401",
+  "secondaryPassword": "K41pT#4kkar@2401",
+  "firstName": "Kalp",
+  "lastName": "Thakkar",
+  "phoneExtension": "+1",
+  "phoneNumber": "3864567971",
+  "preferredName": "",
+  "birthDate": "2001-04-02",
+  "linkedin": "https://www.linkedin.com/in/kalpthakkar",
+  "github": "https://github.com/kalpthakkar",
+  "portfolio": "",
+  "otherURLs": [
+    "https://scholar.google.com/citations?user=g7AQ9N0AAAAJ"
+  ],
+  "profile_html_card": "<div style='display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; margin-bottom: 20px;'>\\n    <!-- First Section: Why This Isn’t Just Another Tech Profile -->\\n    <div style='flex: 1; flex-basis: 45%; background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07);'>\\n        <h3 style='color: #ff6f61; font-size: 18px; font-weight: 600; margin-bottom: 16px;'>💡 Why This Isn’t Just Another Tech Profile?</h3>\\n        <p style='font-size: 14px; color: #333; line-height: 1.6; margin-bottom: 0;'>Proven expertise in turning messy, multimodal data into decision-ready intelligence across smart cities, airports, healthcare, and AV ecosystems. From predictive infrastructure to edge AI and digital twins adoptions throughout industry, this isn’t just code - it’s operational impact at scale.</p>\\n    </div>\\n\\n    <!-- Second Section: Current or Previous Collaborations -->\\n    <div style='flex: 1; flex-basis: 55%; background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07);'>\\n        <h3 style='color: #ff6f61; font-size: 18px; font-weight: 600; margin-bottom: 16px;'>🔥 Current or Previous Collaborations</h3>\\n        <ul style='font-size: 14px; color: #333; line-height: 1.6; list-style-type: disc; padding-left: 20px;'>\\n            <li>Member of Open Geospatial Consortium (OGC)</li>\\n            <li>Urban Digital Twin Lab at SMST-UCF</li>\\n            <li>City of Altamonte Springs CraneRIDES AV</li>\\n            <li>IEEE SMC & Academia-Industry Summer School (Australia)</li>\\n            <li>UCF Research Group</li>\\n            <li>Startups, Universities, and Academic Labs</li>\\n        </ul>\\n    </div>\\n</div>",
+  "enabledJobSkillsSelection": true,
+  "skills": [
+    "Python",
+    "C++",
+    "Javascript",
+    "Autonomous System",
+    "DevOps",
+    "CI/CD",
+    "Git",
+    "Docker",
+    "IoT",
+    "Artificial Intelligence",
+    "Natural Language Processing",
+    "LLM",
+    "AI Agents",
+    "Kubernetes",
+    "REST API",
+    "SQL",
+    "GraphQL",
+    "Agentic Workflow",
+    "Google Cloud Platform",
+    "AWS",
+    "Terraform",
+    "Ansible",
+    "Web Development",
+    "ETL",
+    "Data Science",
+    "Intelligent Systems"
+  ],
+  "useSalaryRange": true,
+  "relocationPreference": true,
+  "relocationSupport": false,
+  "accomodationSupport": false,
+  "remoteWorkPreference": true,
+  "employmentInfo": {
+    "visaSponsorshipRequirement": false,
+    "workAuthorization": true,
+    "rightToWork": true,
+    "backgroundCheck": true,
+    "employmentRestrictions": false,
+    "nonCompleteRestrictions": false,
+    "securityClearance": false,
+    "citizenshipStatus": false,
+    "gender": "Male",
+    "sexualOrientation": "Heterosexual / Straight",
+    "lgbtqStatus": false,
+    "hispanicOrLatino": false,
+    "militaryService": false,
+    "veteranStatus": false,
+    "disabilityStatus": false,
+    "visaStatus": "F-1 OPT",
+    "ethnicity": [
+      "South Asian"
+    ]
+  },
+  "llmAddressSelectionEnabled": false,
+  "llmResumeSelectionEnabled": false,
+  "enabledUserSkillsSelection": false,
+  "enabledRelatedSkillsSelection": false,
+  "addresses": [
+    {
+      "addressLine1": "1718 France Dr",
+      "addressLine2": "Unit 100",
+      "city": "Orlando",
+      "state": "Florida (FL)",
+      "country": "United States of America",
+      "postalCode": "32826"
+    },
+    {
+      "addressLine1": "115 Stewart St",
+      "addressLine2": "",
+      "city": "Sunnyvale",
+      "state": "California (CA)",
+      "country": "United States of America",
+      "postalCode": "94086"
+    },
+    {
+      "addressLine1": "1547 Revere Cir",
+      "addressLine2": "",
+      "city": "Schaumburg",
+      "state": "Illinois (IL)",
+      "country": "United States of America",
+      "postalCode": "60193"
+    },
+    {
+      "addressLine1": "14212 Montour Dr.",
+      "addressLine2": "",
+      "city": "Austin",
+      "state": "Texas (TX)",
+      "country": "United States of America",
+      "postalCode": "78717"
+    },
+    {
+      "addressLine1": "1255 Eldridge pkwy",
+      "addressLine2": "",
+      "city": "Houston",
+      "state": "Texas (TX)",
+      "country": "United States of America",
+      "postalCode": "77077"
+    },
+    {
+      "addressLine1": "7421 Frankford Rd",
+      "addressLine2": "Apt 2823",
+      "city": "Dallas",
+      "state": "Texas (TX)",
+      "country": "United States of America",
+      "postalCode": "75252"
+    },
+    {
+      "addressLine1": "226 E 7th St Unit B",
+      "addressLine2": "",
+      "city": "New York",
+      "state": "New York (NY)",
+      "country": "United States of America",
+      "postalCode": "10009"
+    },
+    {
+      "addressLine1": "1114 Saratoga St",
+      "addressLine2": "",
+      "city": "Boston",
+      "state": "Massachusetts (MA)",
+      "country": "United States of America",
+      "postalCode": "02128"
+    },
+    {
+      "addressLine1": "315 W Pierpont Ave",
+      "addressLine2": "",
+      "city": "Salt Lake City",
+      "state": "Utah (UT)",
+      "country": "United States of America",
+      "postalCode": "84101"
+    },
+    {
+      "addressLine1": "1081 Juniper St NE",
+      "addressLine2": "",
+      "city": "Atlanta",
+      "state": "Georgia (GA)",
+      "country": "United States of America",
+      "postalCode": "30309"
+    },
+    {
+      "addressLine1": "1066 S Dahlia St",
+      "addressLine2": "Apt E23",
+      "city": "Denver",
+      "state": "Colorado (CO)",
+      "country": "United States of America",
+      "postalCode": "80246"
+    },
+    {
+      "addressLine1": "3355 Las Vegas S",
+      "addressLine2": "",
+      "city": "Las Vegas",
+      "state": "Nevada (NV)",
+      "country": "United States of America",
+      "postalCode": "89109"
+    },
+    {
+      "addressLine1": "2216 18th Avenue S",
+      "addressLine2": "",
+      "city": "Seattle",
+      "state": "Washington (WA)",
+      "country": "United States of America",
+      "postalCode": "98144"
+    },
+    {
+      "addressLine1": "1795 Sycamore St",
+      "addressLine2": "",
+      "city": "Cincinnati",
+      "state": "Ohio (OH)",
+      "country": "United States of America",
+      "postalCode": "45202"
+    },
+    {
+      "addressLine1": "8515 University Executive Park Dr",
+      "addressLine2": "",
+      "city": "Charlotte",
+      "state": "North Carolina (NC)",
+      "country": "United States of America",
+      "postalCode": "28262"
+    }
+  ],
+  "primaryAddressContainerIdx": 1,
+  "workExperiences": [
+    {
+      "jobTitle": "Research Assistant",
+      "company": "Temple University",
+      "jobLocationType": "On-site",
+      "location": "Philadelphia, PA",
+      "jobType": "Full Time",
+      "roleDescription": "Architecting and productionizing large-scale EHR data into AI pipelines spanning ingestion, ETL, feature engineering, NLP, model training, validation, and inference across multimodal datasets (structured records + free-text), enabling 30-50% earlier risk detection, 2× faster model iteration, and reusable system designs transferable across healthcare, mobility, and enterprise domains.",
+      "startDate": "2026-02-01",
+      "endDate": "",
+      "reasonForLeaving": null
+    },
+    {
+      "jobTitle": "Software Engineer",
+      "company": "University of Central Florida",
+      "jobLocationType": "On-site",
+      "location": "Orlando, FL",
+      "jobType": "Part Time",
+      "roleDescription": "Led geospatial data analysis, cloud-AI integration for real-time 3D informed decision-making by modeling dynamic urban systems including predictive algorithms for passenger flow at MCO and international airports, advancing Airport Digital Twin development\n\nDeveloped predictive ML models (risk scoring, phenotyping, progression forecasting) for meta-analytical stress detection optimized for accuracy, interpretability, and deployment constraints, boosting AUC gains up to 0.18, false-positive reduction of 25%, and sub-second inference latency in real-world decision workflows\n\nDelivered Edge-AI solutions for urban noise and obstacle detection in the OGC UDTIP open-source pilot project using GeoPose and TrainDML-AI standards; research published at ISPRS GSW'25 & adopted by United Nations for global digital twin interoperability.",
+      "startDate": "2024-08-08",
+      "endDate": "",
+      "reasonForLeaving": null
+    },
+    {
+      "jobTitle": "Graduate Teaching Assistant",
+      "company": "University of Central Florida",
+      "jobLocationType": "Hybrid",
+      "location": "Orlando, FL",
+      "jobType": "Part Time",
+      "roleDescription": "Guided and supported 150+ graduate students in mastering NLP and blockchain fundamentals, including text preprocessing, vector models, deep learning (BERT, GPT, T5), distributed ledger technologies, consensus (PoW, PoS), and smart contracts on Ethereum.\n\nLed hands-on sessions with Hugging Face, PyTorch, and Solidity, facilitated research discussions, and provided tailored support in both language modeling and decentralized application design. Enhanced student engagement and performance by connecting theoretical concepts with real-world applications through interactive labs, code reviews, and personalized guidance.",
+      "startDate": "2024-01-08",
+      "endDate": "2025-08-08",
+      "reasonForLeaving": "End of semester."
+    },
+    {
+      "jobTitle": "Software Engineer",
+      "company": "Sterling Accuris Diagnostics",
+      "jobLocationType": "On-site",
+      "location": "India",
+      "jobType": "Part Time",
+      "roleDescription": "Owned deployment and scaling of production-grade automation platform to dynamically optimizes task scheduling & resource allocation using predictive analytics (LightGBM, Prophet), improving operational throughput by 38% for enterprise clients\n\nStreamlined AWS (Lambda, EC2) services powering E2E webApp with React, Node.js, REST, PostgreSQL, and CI/CD integrations, enabling real-time monitoring, and reducing incident resolution time by 52% through faster debugging & automated workflows.",
+      "startDate": "2020-05-01",
+      "endDate": "2023-07-01",
+      "reasonForLeaving": "Graduation ongoing & career growth."
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Central Florida",
+      "degree": [
+        "Masters of Science",
+        "MS",
+        "M.S.",
+        "Master's Degree"
+      ],
+      "major": [
+        "Computer Science",
+        "Computer and Info Science",
+        "Computer Science and Eng",
+        "CS",
+        "Computer Engineering"
+      ],
+      "startDate": "2023-08-08",
+      "endDate": "2025-05-01",
+      "gpa": "4"
+    },
+    {
+      "school": "LDRP Institute of Technology & Research",
+      "degree": [
+        "Bachelor of Engineering",
+        "Bachelor",
+        "BS",
+        "B.S.",
+        "Bachelor of Technology",
+        "B. Tech",
+        "B. Eng.",
+        "Bachelor's Degree"
+      ],
+      "major": [
+        "Computer Engineering",
+        "Computer Science and Eng",
+        "Computer Science",
+        "Computer and Info Science",
+        "CE",
+        "CS"
+      ],
+      "startDate": "2019-07-01",
+      "endDate": "2023-05-01",
+      "gpa": "8.87"
+    }
+  ],
+  "resumes": [
+    {
+      "resumeCategory": "Full Stack Software Development Engineer",
+      "resumeCountry": "United States of America",
+      "resumeState": "California (CA)",
+      "resumeCity": "San Jose",
+      "resumeRegion": "San Jose, California (CA), United States of America",
+      "resumeStoredPath": "resumes/17702053960612313/Kalp Resume.pdf"
+    },
+    {
+      "resumeCategory": "Artificial Intelligence",
+      "resumeCountry": "United States of America",
+      "resumeState": "California (CA)",
+      "resumeCity": "San Jose",
+      "resumeRegion": "San Jose, California (CA), United States of America",
+      "resumeStoredPath": "resumes/17703415070097884/Kalp Resume.pdf"
+    }
+  ],
+  "primaryResumeContainerIdx": 0,
+  "projects": {
+    "Urban Digital Twin Interoperability Pilot": {
+      "description": "• Contributed to the Open Geospatial Consortium’s UDTIP project leading D101 deliverable for developing interoperable digital twin standards for smart cities, enabling real-time, cross-platform urban system integration. \n• Engineered robust data pipelines to harmonize heterogeneous IoT and geospatial data sources using GeoPose and TrainDML-AI standards. \n• Developed Edge-AI models for obstacle detection, facilitating real-time situational awareness. \n• Results published at ISPRS GSW 2025 and adopted by the United Nations for advancing global digital twin interoperability frameworks.",
+      "topics": [
+        "Digital Twin",
+        "Real-time System",
+        "IoT",
+        "Artificial Intelligence",
+        "Intelligent Systems",
+        "GeoPose",
+        "TrainingDML-AI",
+        "Research & Development",
+        "Edge-AI",
+        "Open Source"
+      ],
+      "file": "projects/17691143344007694/Research ~ Geopose_enabled_Camera_Imagery_Interoperability_with_Geo_AI_in_Urban_Digital_Twins.pdf",
+      "url": "https://github.com/kalpthakkar/OGC-UDTIP"
+    },
+    "ChromaVision: Object-aware Image Colorization": {
+      "description": "• Led the advancement of the ChromaVision project, enhancing the instance-aware image colorization pipeline through strategic integration of the MMDetection framework. This meticulous integration yielded a remarkable 15% increase in object detection accuracy, elevating the mAP (mean Average Precision) by 12 points across diverse object categories.\n• By incorporating Autoencoders within the colorization architecture, I significantly bolstered the model's capacity to discern intricate color patterns, resulting in a noteworthy 20% reduction in reconstruction error. This not only enhanced the model's fidelity but also contributed to the overall quality of colorized images.\n• Additionally, expanded the model's object-level understanding through rigorous training on ImageNet’s 1.5 million annotated instances.",
+      "topics": [
+        "Computer Vision",
+        "Scikit-Learn",
+        "PyTorch",
+        "Machine Learning",
+        "CUDA Toolkit",
+        "OpenCV",
+        "Object Detection",
+        "TensorFlow"
+      ],
+      "file": "",
+      "url": "https://github.com/CAP5415-Fall2023-Image-Colorization/InstColorization_kalp"
+    },
+    "AURA in Healthcare | Brain Control Interface": {
+      "description": "• Designed and developed a real-time EEG-based Brain-Computer Interface (BCI) leveraging the ADS1299 module and a 3-electrode configuration (Fp1, Fpz, Fp2) on an ESP32 microcontroller. \n• Achieved 93% brainwave classification accuracy through ML-powered mental-state mapping using LSTM models, enabling early neurological disease prediction and assistive communication for non-verbal individuals. \n• Integrated the system with FastAPI microservices, LangChain RAG pipelines, and ChromaDB to fuse EEG, wearable, and clinical data into a cloud-deployed architecture. \n• Optimized edge processing to reduce response latency by 3 seconds, and enhanced task success by 40% through secure MQTT protocol based communication and intelligent IoT control. \n• Deployed for interactive analytics, making AURA a pioneering solution in neuro-assistive and personalized healthcare tech.",
+      "topics": [
+        "Brain-computer Interfaces",
+        "Edge-AI",
+        "LangChain",
+        "Large Language Models (LLM)",
+        "Retrieval-Augmented Generation (RAG)",
+        "Natural Language Processing (NLP)",
+        "Human Computer Interaction",
+        "Embedded Software Programming",
+        "C++",
+        "Internet of Things (IoT)",
+        "Python (Programming Language)",
+        "Machine Learning in Healthcare"
+      ],
+      "file": "",
+      "url": "https://github.com/kalpthakkar/AURA-EEG-based-BCI"
+    },
+    "ALIE • Artificially Linked Intelligent Entity | Full-Stack IoT Automation": {
+      "description": "• Built a real-time embedded control system on ESP32 using FreeRTOS and MQTT with end-to-end encryption and OTA updates, improving device response latency by 21% through efficient task scheduling, ISR handling, and protocol-layer optimization.\n• Integrated voice commands (Alexa/Google Home), NFC/RFID, and mobile/web interfaces via secure API endpoints, enabling seamless multi-modal control, enhancing accessibility, and increasing overall user interaction and engagement by 40%.\n• Developed a cloud-synced firmware with Firebase and designed a 3D-enabled React dashboard for real-time state monitoring, bi-directional updates, remote task scheduling, and immersive visualization using ThreeJS, Fusion 360, and model-viewer.",
+      "topics": [
+        "Internet of Things (IoT)",
+        "Embedded Systems",
+        "C++",
+        "Computer Networking",
+        "Firebase",
+        "Cloud Firestore",
+        "NoSQL",
+        "JavaScript",
+        "React.js",
+        "Autodesk Fusion 360",
+        "Full-Stack Development",
+        "Software Development Life Cycle (SDLC)",
+        "DevOps",
+        "Docker",
+        "Git"
+      ],
+      "file": "",
+      "url": "https://github.com/kalpthakkar/ALIE-IoT-Automation"
+    },
+    "Smart Brain | Face Recognition Full-Stack WebApp": {
+      "description": "• Developed a secure and responsive full-stack face recognition app using the MERN stack, integrating Clarifai API for real-time facial detection with pixel-level precision. \n• Optimized frontend performance using responsive UI with CSS Flexbox/Grid and Figma-designed wireframes, reducing load time by 2.8s. \n• Leveraged Node.js with PostgreSQL to minimize database query latency by 15ms. \n• Implemented RESTful APIs and bcrypt-based authentication, reducing breach risk by 90%, ensuring robust data protection and end-to-end deployment via Heroku.",
+      "topics": [
+        "OpenCV",
+        "Full-Stack Development",
+        "React.js",
+        "Node.js",
+        "Three.js",
+        "PostgreSQL",
+        "API",
+        "JavaScript",
+        "Image Processing",
+        "Computer Vision",
+        "Heroku",
+        "Git",
+        "GitHub"
+      ],
+      "file": "",
+      "url": "https://github.com/kalpthakkar/Face-Recognition-WebApp"
+    }
+  },
+  "achievements": {
+    "Global Scholar, IEEE AISS on Human-Centric AI Autonomy": {
+      "description": "Awarded a prestigious scholarship of US$850 to attend the IEEE Academia-Industry Summer School (AISS) on \"Towards Human-Centric Artificial Intelligence (AI)-empowered Autonomy,\" held at Swinburne University of Technology, Melbourne, Australia. Selected as one of only 20 participants globally from a highly competitive pool of applications. This opportunity recognizes my potential and dedication to advancing AI and autonomy and provides a platform to deepen my expertise, network with global leaders in academia and industry, and represent my research on an international stage.\nIssued by IEEE SMC - Systems, Man, and Cybernetics Society.",
+      "file": "achievements/17691143345203222/IEEE AISS'24 Scholarship Award (Global Top 20).pdf",
+      "url": "https://www.linkedin.com/in/kalpthakkar/overlay/1735147603393/single-media-viewer"
+    },
+    "Insight Coding Techfest Winner": {
+      "description": "I'm elated to announce my triumph in an inter-university coding contest at a premier tech fest, where over 1000 students from 50+ universities across India participated. Hailing from L.D. College of Engineering (L.D.C.E), the #1 government engineering college in the state and 20th overall rank nationally, this victory underscores the exceptional education and innovation fostered at L.D.C.E. Emerging as the top coder in this highly competitive arena not only showcases my technical acumen but also positions L.D.C.E as a hub for top-tier talent. This achievement marks a pivotal moment in my academic journey, reflecting the excellence ingrained in both myself and my institution.\nIssued by L.D. College of Engineering",
+      "file": "",
+      "url": "https://www.linkedin.com/in/kalpthakkar/details/honors/1706164328571/single-media-viewer"
+    },
+    "Perplexity Student Ambassador": {
+      "description": "",
+      "file": "",
+      "url": ""
+    },
+    "Student Excellence Award": {
+      "description": "Humbled to have clinched the prestigious 'Student of the Year' accolade for an unprecedented four consecutive years, standing out amongst 500+ peers. This esteemed recognition is a testament to my unwavering commitment to academic excellence and active participation in extracurricular pursuits. Beyond mere grades, it reflects a holistic dedication to fostering a dynamic learning environment. Grateful for the acknowledgment, I see this award not only as a personal triumph but as a celebration of resilience, leadership, and a passion for continual growth. Eager to carry this spirit of achievement into future endeavors and make a lasting impact. #StudentOfTheYear #ExcellenceInAction\nIssued by BEST Higher Secondary School",
+      "file": "",
+      "url": ""
+    }
+  },
+  "salaryExpectation": {
+    "min": "90000",
+    "max": "120000"
+  }
+}

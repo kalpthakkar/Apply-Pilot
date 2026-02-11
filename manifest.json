@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Apply Pilot",
+  "version": "1.0",
+  "description": "A modular, scalable automation assistant for browser tasks.",
+  "permissions": [
+    "identity",
+    "identity.email",
+    "scripting",
+    "tabs",
+    "activeTab",
+    "storage",
+    "webNavigation",
+    "offscreen"
+  ],
+  "oauth2": {
+    "client_id": "733212435732-pp8e7jl5912jq24m5n6eeu9va5mmimn4.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/gmail.readonly"]
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "app/ui/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"],
+      "type": "module"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "dist/popup.js",
+        "web/userData.json",
+        "web/uploads/resumes/**",
+        "dist/modules/ats/*.js",
+        "dist/modules/jobBoards/*.js",
+        "dist/services/gmail.js",
+        "dist/models/**",
+        "dist/offscreen/offscreen.html"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
+}

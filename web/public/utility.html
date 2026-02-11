@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Components Playground</title>
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome Free CDN --> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+          background: #f9fafb;
+          font-family: 'Inter', sans-serif;
+        }
+    
+        /* --- Toggle Buttons --- */
+        .toggle-btn input[type="radio"], .toggle-btn input[type="checkbox"] {
+          display: none;
+        }
+    
+        .toggle-btn label {
+          cursor: pointer;
+          border: 1px solid #d1d5db;
+          padding: 0.4rem 1rem;
+          border-radius: 0.375rem;
+          margin-right: 0.4rem;
+          margin-bottom: 0.4rem;
+          display: inline-block;
+          background: white;
+          color: #374151;
+          font-size: 0.9rem;
+          transition: all 0.15s ease;
+        }
+    
+        .toggle-btn input:checked + label {
+          background: #2563eb;
+          color: white;
+          border-color: #2563eb;
+        }
+    
+        /* --- Modal Visibility --- */
+        /* Generic modal visibility styles */
+        .custom-modal {
+        transition: opacity 300ms ease;
+        opacity: 0;
+        pointer-events: none;
+        }
+        .custom-modal.show {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        }
+
+        /* --- Multi Select Container --- */
+        .multi-select-container {
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        padding: 0.5rem;
+        background: white;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        }
+
+        .input-wrapper {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        position: relative; /* dropdown positioned relative to this */
+        }
+
+        .chip {
+        display: inline-flex;
+        align-items: center;
+        background-color: #2563eb;
+        color: white;
+        border-radius: 9999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.85rem;
+        }
+
+        .chip button {
+        background: none;
+        border: none;
+        color: white;
+        margin-left: 0.4rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+        }
+
+
+
+        /* Fix for the basic text-entry multi-select (first Ethnicity field) */
+.yoo.multi-select-container {
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: white;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  min-height: 42px; /* match input height */
+}
+
+.yoo.multi-select-container input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  min-width: 120px;
+}
+
+.yoo.multi-select-container .chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: #2563eb;
+  color: white;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.yoo.multi-select-container .chip button {
+  background: none;
+  border: none;
+  color: white;
+  margin-left: 0.4rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+    </style>
+</head>
+
+
+<body class="container mx-auto py-10 max-w-4xl space-y-10">
+
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Form Elements Utility Library</h1>
+
+    <!-- Text Inputs -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">Text Inputs</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+            <input type="text" class="form-control" placeholder="Text Input" />
+            <input type="email" class="form-control" placeholder="Email" />
+            <input type="password" class="form-control" placeholder="Password" />
+            <input type="number" class="form-control" placeholder="Number" />
+            <input type="tel" class="form-control" placeholder="Phone" />
+            <input type="url" class="form-control" placeholder="Website" />
+        </div>
+    </section>
+
+    <!-- Selects / Multiselect -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">Select / MultiSelect</h2>
+        <select class="form-control mb-3">
+            <option>Select Country</option>
+            <option>United States</option>
+            <option>India</option>
+            <option>United Kingdom</option>
+        </select>
+
+        <label class="block font-medium mb-1">Skills (Free Multi-select)</label>
+        <div class="multi-select-container" data-component="free-multiselect">
+            <div class="input-wrapper flex flex-wrap items-center gap-2 flex-1">
+                <div class="chips-container flex flex-wrap gap-2"></div>
+                <input type="text" placeholder="Type and press Enter..." class="border-none focus:ring-0 outline-none flex-1 min-w-[120px]" autocomplete="off" />
+            </div>
+        </div>
+
+        <label class="block font-medium mb-1">Ethnicity (Multi-select)</label>
+        <div class="multi-select-container border border-gray-300 rounded-md p-2 flex flex-wrap items-center gap-2 bg-white" data-multiselect-options>
+
+            <!-- Wrap chips + input together -->
+            <div class="input-wrapper flex flex-wrap items-center gap-2 flex-1 relative">
+                <div class="chips-container flex flex-wrap gap-2"></div>
+                <input type="text" placeholder="Select..." class="border-none focus:ring-0 outline-none flex-1 min-w-[120px]" autocomplete="off" />
+
+                <!-- Dropdown options list -->
+                <ul class="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto hidden z-50" data-options-list>
+                    <li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Asian">Asian</li>
+                    <li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Black or African American">Black or African American</li>
+                    <li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Hispanic or Latino">Hispanic or Latino</li>
+                    <li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Native American">Native American</li>
+                    <li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="White">White</li>
+                    <li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Pacific Islander">Pacific Islander</li>
+                    <li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Two or More Races">Two or More Races</li>
+                    <li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Other">Other</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Text Area -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">Text Areas</h2>
+        <textarea class="form-control" rows="3" placeholder="Enter longer text..."></textarea>
+    </section>
+
+    <!-- Links -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">Links</h2>
+        <div class="space-y-3">
+            <!-- LinkedIn -->
+            <div class="url-field" style="display: flex; align-items: center; gap: 0.75rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.75rem; background: #fff;">
+            <i class="fab fa-linkedin text-blue-600" style="font-size: 1.25rem;"></i>
+            <div class="divider" style="width: 1px; height: 1.5rem; background: #ddd;"></div>
+            <input type="url" name="linkedin" placeholder="LinkedIn URL" class="form-control" style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.95rem;" />
+            </div>
+
+            <!-- GitHub -->
+            <div class="url-field" style="display: flex; align-items: center; gap: 0.75rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.75rem; background: #fff;">
+            <i class="fab fa-github text-gray-700" style="font-size: 1.25rem;"></i>
+            <div class="divider" style="width: 1px; height: 1.5rem; background: #ddd;"></div>
+            <input type="url" name="github" placeholder="GitHub URL" class="form-control" style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.95rem;" />
+            </div>
+
+            <!-- Portfolio -->
+            <div class="url-field" style="display: flex; align-items: center; gap: 0.75rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.75rem; background: #fff;">
+            <i class="fa-solid fa-user-tie" style="color: #cb83fb; font-size: 1.25rem;"></i>
+            <div class="divider" style="width: 1px; height: 1.5rem; background: #ddd;"></div>
+            <input type="url" name="portfolio" placeholder="Portfolio URL" class="form-control" style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.95rem;" />
+            </div>
+
+            <!-- Other -->
+            <div class="url-field" style="display: flex; align-items: center; gap: 0.75rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.75rem; background: #fff;">
+            <i class="fas fa-globe text-gray-600" style="font-size: 1.25rem;"></i>
+            <div class="divider" style="width: 1px; height: 1.5rem; background: #ddd;"></div>
+            <input type="url" name="other" placeholder="Other URL" class="form-control" style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.95rem;" />
+            </div>
+
+            <div class="links-module mb-2">
+                <div class="links-fields-container" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                <button type="button" class="add-link-btn" style="
+                    border: 1px solid #3b82f6;
+                    background: transparent;
+                    color: #3b82f6;
+                    padding: 0.5rem 1rem;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    margin-top: 0.5rem;
+                ">Add Link</button>
+            </div>
+
+
+        </div>
+
+       
+
+    </section>
+
+
+    <!-- Date / Time / Range -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">Date, Time, and Range</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+            <input type="date" class="form-control" />
+            <input type="time" class="form-control" />
+            <input type="range" min="0" max="100" value="50" class="form-range" />
+        </div>
+    </section>
+
+    <!-- File Upload -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">File Upload</h2>
+        <input type="file" class="form-control" />
+    </section>
+
+    <!-- Toggle Button Groups -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">Toggle Button Groups</h2>
+
+        <div class="mb-4">
+            <label class="block font-medium mb-2">Are you authorized to work in the US?</label>
+            <div class="toggle-btn">
+                <input type="radio" id="usYes" name="usAuth" />
+                <label for="usYes">Yes</label>
+                <input type="radio" id="usNo" name="usAuth" />
+                <label for="usNo">No</label>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-medium mb-2">Do you have a disability?</label>
+            <div class="toggle-btn">
+                <input type="radio" id="disYes" name="disability" />
+                <label for="disYes">Yes</label>
+                <input type="radio" id="disNo" name="disability" />
+                <label for="disNo">No</label>
+                <input type="radio" id="disDecline" name="disability" />
+                <label for="disDecline">Decline to state</label>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkboxes & Switches -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">Checkboxes & Switches</h2>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="check1" />
+            <label class="form-check-label" for="check1">I agree to the terms</label>
+        </div>
+        <div class="form-check form-switch mt-2">
+            <input class="form-check-input" type="checkbox" id="switch1" />
+            <label class="form-check-label" for="switch1">Enable notifications</label>
+        </div>
+    </section>
+
+    <!-- Buttons -->
+    <section>
+        <h2 class="text-xl font-semibold mb-3">Buttons</h2>
+        <div class="space-x-3">
+            <button class="btn btn-primary">Primary</button>
+            <button class="btn btn-outline-primary">Outline</button>
+            <button class="btn btn-success">Success</button>
+            <button class="btn btn-danger">Danger</button>
+        </div>
+    </section>
+
+    <!-- Buttons -->
+    <section class="space-x-3 mb-6 text-center">
+        <button class="btn btn-primary open-modal" data-modal="modal1" data-transition="fade">
+            Open Fade Modal
+        </button>
+        <button class="btn btn-success open-modal" data-modal="modal2" data-transition="slide">
+            Open Slide Modal
+        </button>
+        <button class="btn btn-danger open-modal" data-modal="modal3" data-transition="scale">
+            Open Scale Modal
+        </button>
+    </section>
+
+    <!-- ================= MODAL 1 ================= -->
+    <div id="modal1" class="custom-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" aria-hidden="true">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full shadow-lg transform transition-all duration-300">
+            <h3 class="text-xl font-bold mb-4">Modal 1 - Fade Transition</h3>
+            <p class="text-gray-600 mb-4">This modal fades in smoothly using the "fade" transition.</p>
+            <div class="text-end">
+                <button class="btn btn-outline-secondary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 2 ================= -->
+    <div id="modal2" class="custom-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" aria-hidden="true">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full shadow-lg transform transition-all duration-300">
+            <h3 class="text-xl font-bold mb-4">Modal 2 - Slide Transition</h3>
+            <p class="text-gray-600 mb-4">This one slides from the top and fades in.</p>
+            <div class="text-end">
+                <button class="btn btn-outline-secondary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 3 ================= -->
+    <div id="modal3" class="custom-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" aria-hidden="true">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full shadow-lg transform transition-all duration-300">
+            <h3 class="text-xl font-bold mb-4">Modal 3 - Scale Transition</h3>
+            <p class="text-gray-600 mb-4">This modal pops in with a smooth scaling animation.</p>
+            <div class="text-end">
+                <button class="btn btn-outline-secondary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-500 text-sm pt-8">
+        © 2025 | Form Elements Toolkit | Tailwind + Bootstrap
+    </footer>
+
+    <script>
+        // Animate modal open/close
+        function animateModal(modal, type, open = true) {
+          const content = modal.querySelector("div[role='dialog'], .bg-white");
+          content.style.transition = "transform 300ms ease, opacity 300ms ease";
+    
+          if (open) {
+            modal.classList.add("show");
+            modal.setAttribute("aria-hidden", "false");
+            content.style.opacity = "0";
+    
+            if (type === "fade") {
+              setTimeout(() => content.style.opacity = "1", 20);
+            } else if (type === "slide") {
+              content.style.transform = "translateY(-50px)";
+              setTimeout(() => {
+                content.style.transform = "translateY(0)";
+                content.style.opacity = "1";
+              }, 20);
+            } else if (type === "scale") {
+              content.style.transform = "scale(0.7)";
+              setTimeout(() => {
+                content.style.transform = "scale(1)";
+                content.style.opacity = "1";
+              }, 20);
+            }
+          } else {
+            if (type === "fade") content.style.opacity = "0";
+            if (type === "slide") { content.style.transform = "translateY(-50px)"; content.style.opacity = "0"; }
+            if (type === "scale") { content.style.transform = "scale(0.7)"; content.style.opacity = "0"; }
+            setTimeout(() => {
+              modal.classList.remove("show");
+              modal.setAttribute("aria-hidden", "true");
+            }, 300);
+          }
+        }
+    
+        // Attach event listeners to buttons
+        document.querySelectorAll(".open-modal").forEach(button => {
+          button.addEventListener("click", () => {
+            const modalId = button.dataset.modal;
+            const transition = button.dataset.transition || "fade";
+            const modal = document.getElementById(modalId);
+            if (modal) {
+              modal.dataset.transition = transition;
+              animateModal(modal, transition, true);
+            }
+          });
+        });
+    
+        // Handle close button + backdrop click
+        document.querySelectorAll(".custom-modal").forEach(modal => {
+          modal.addEventListener("click", e => {
+            if (e.target === modal) animateModal(modal, modal.dataset.transition || "fade", false);
+          });
+          modal.querySelectorAll(".close-modal").forEach(btn => {
+            btn.addEventListener("click", () => animateModal(modal, modal.dataset.transition || "fade", false));
+          });
+        });
+    
+        // ESC key closes currently open modal
+        document.addEventListener("keydown", e => {
+          if (e.key === "Escape") {
+            document.querySelectorAll(".custom-modal.show").forEach(openModal => {
+              animateModal(openModal, openModal.dataset.transition || "fade", false);
+            });
+          }
+        });
+    </script>
+
+
+    <!-- Multi-select JS -->
+    <script>
+        /* ==========================================================
+           FREE-ENTRY MULTISELECT COMPONENT
+           Allows user to type any text and add chips dynamically.
+           Works for any number of instances.
+        ========================================================== */
+        document.querySelectorAll('[data-component="free-multiselect"]').forEach(container => {
+          const inputWrapper = container.querySelector('.input-wrapper') || container;
+          const input = inputWrapper.querySelector('input');
+          let chipsContainer = inputWrapper.querySelector('.chips-container');
+        
+          // If no chips container exists, create one dynamically
+          if (!chipsContainer) {
+            chipsContainer = document.createElement('div');
+            chipsContainer.className = 'chips-container flex flex-wrap gap-2 mb-1';
+            inputWrapper.insertBefore(chipsContainer, input);
+          }
+        
+          // Handle Enter key to create chip
+          input.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && input.value.trim() !== '') {
+              e.preventDefault();
+              const value = input.value.trim();
+        
+              // Avoid duplicates
+              const existing = [...chipsContainer.children].some(c => c.dataset.value === value);
+              if (existing) {
+                input.value = '';
+                return;
+              }
+        
+              // Create chip
+              const chip = document.createElement('span');
+              chip.className = 'chip';
+              chip.dataset.value = value;
+              chip.innerHTML = `${value}<button type="button">&times;</button>`;
+        
+              // Delete chip on button click
+              chip.querySelector('button').addEventListener('click', () => chip.remove());
+        
+              chipsContainer.appendChild(chip);
+              input.value = '';
+            }
+          });
+        });
+    </script>
+
+
+    <script>
+        document.querySelectorAll('[data-multiselect-options]').forEach(container => {
+          const inputWrapper = container.querySelector('.input-wrapper') || container;
+          const input = inputWrapper.querySelector('input');
+        
+          // Ensure chips container exists
+          let chipsContainer = inputWrapper.querySelector('.chips-container');
+          if (!chipsContainer) {
+            chipsContainer = document.createElement('div');
+            chipsContainer.className = 'chips-container flex flex-wrap gap-2 mb-1';
+            inputWrapper.insertBefore(chipsContainer, input);
+          }
+        
+          const optionsList = inputWrapper.querySelector('[data-options-list]');
+          const allOptions = [...optionsList.querySelectorAll('li')];
+        
+          // Update dropdown position dynamically
+          const updateDropdownPosition = () => {
+            optionsList.style.top = `${input.offsetTop + input.offsetHeight}px`;
+            optionsList.style.left = `${input.offsetLeft}px`;
+            optionsList.style.width = `${input.offsetWidth}px`;
+          };
+        
+          // Show dropdown
+          const showDropdown = () => {
+            optionsList.classList.remove('hidden');
+            updateDropdownPosition();
+          };
+        
+          // Hide dropdown
+          const hideDropdown = () => {
+            optionsList.classList.add('hidden');
+          };
+        
+          // Filter options based on input and selected chips
+          const refreshOptions = () => {
+            const inputVal = input.value.toLowerCase();
+            const selectedValues = [...chipsContainer.children].map(c => c.dataset.value);
+            allOptions.forEach(li => {
+              const val = li.dataset.value;
+              if (selectedValues.includes(val)) {
+                li.style.display = 'none';
+              } else {
+                li.style.display = val.toLowerCase().includes(inputVal) ? 'block' : 'none';
+              }
+            });
+          };
+        
+          input.addEventListener('focus', showDropdown);
+          input.addEventListener('input', refreshOptions);
+        
+          // Handle selection
+          optionsList.addEventListener('mousedown', e => {
+            if (e.target.tagName === 'LI') {
+              e.preventDefault();
+              const value = e.target.dataset.value;
+        
+              // Create chip
+              const chip = document.createElement('span');
+              chip.className = 'chip';
+              chip.dataset.value = value;
+              chip.innerHTML = `${value}<button type="button">&times;</button>`;
+              chip.querySelector('button').onclick = () => {
+                chip.remove();
+                refreshOptions(); // Re-show removed option in dropdown
+              };
+              chipsContainer.appendChild(chip);
+        
+              input.value = '';
+              refreshOptions();
+              hideDropdown(); // Close after selection
+            }
+          });
+        
+          // Hide dropdown on blur
+          input.addEventListener('blur', () => setTimeout(hideDropdown, 150));
+        
+          // Initial options refresh
+          refreshOptions();
+        });
+    </script>
+
+<script>
+(function() {
+  // Select the module
+  const linksModule = document.querySelector('.links-module');
+  const linksContainer = linksModule.querySelector('.links-fields-container');
+  const addLinkBtn = linksModule.querySelector('.add-link-btn');
+
+  // Function to create a new link field
+  function createLinkField() {
+    // Outer wrapper for each link input + delete button
+    const linkFieldWrapper = document.createElement('div');
+    linkFieldWrapper.className = 'link-field-wrapper';
+    linkFieldWrapper.style.display = 'flex';
+    linkFieldWrapper.style.alignItems = 'center';
+    linkFieldWrapper.style.gap = '0.5rem';
+
+    // Actual URL input field block
+    const linkField = document.createElement('div');
+    linkField.className = 'link-field';
+    linkField.style.display = 'flex';
+    linkField.style.alignItems = 'center';
+    linkField.style.gap = '0.75rem';
+    linkField.style.border = '1px solid #ddd';
+    linkField.style.borderRadius = '6px';
+    linkField.style.padding = '0.5rem 0.75rem';
+    linkField.style.background = '#fff';
+    linkField.style.flex = '1';
+
+    // Icon
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-globe text-gray-600';
+    icon.style.fontSize = '1.25rem';
+
+    // Divider
+    const divider = document.createElement('div');
+    divider.style.width = '1px';
+    divider.style.height = '1.5rem';
+    divider.style.background = '#ddd';
+
+    // Input
+    const input = document.createElement('input');
+    input.type = 'url';
+    input.name = 'other_links[]';
+    input.placeholder = 'Other URL';
+    input.className = 'form-control';
+    input.style.flex = '1';
+    input.style.border = 'none';
+    input.style.outline = 'none';
+    input.style.background = 'transparent';
+    input.style.fontSize = '0.95rem';
+
+    // Assemble the link field
+    linkField.appendChild(icon);
+    linkField.appendChild(divider);
+    linkField.appendChild(input);
+
+    // Delete button
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.innerText = 'Delete';
+    delBtn.style.border = '1px solid #ef4444';
+    delBtn.style.background = 'transparent';
+    delBtn.style.color = '#ef4444';
+    delBtn.style.borderRadius = '6px';
+    delBtn.style.padding = '0.4rem 0.75rem';
+    delBtn.style.cursor = 'pointer';
+
+    delBtn.onclick = () => linkFieldWrapper.remove();
+
+    // Append input + delete button
+    linkFieldWrapper.appendChild(linkField);
+    linkFieldWrapper.appendChild(delBtn);
+
+    return linkFieldWrapper;
+  }
+
+  // Add initial link field
+  linksContainer.appendChild(createLinkField());
+
+  // Add new link field on button click
+  addLinkBtn.addEventListener('click', () => {
+    linksContainer.appendChild(createLinkField());
+  });
+})();
+</script>
+
+
+</body>
+
+</html>

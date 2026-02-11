@@ -1,0 +1,738 @@
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-y: scroll;
+}
+
+.custom-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+.custom-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+/* ---------------------------------------- */
+/* ------------ Toggle Buttons ------------ */
+/* ---------------------------------------- */
+/* Hide native checkbox */
+.filters input[type="checkbox"] {
+  display: none;
+}
+
+/* Layout */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Label */
+.minus-plus {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 0px 6px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.minus-plus:hover {
+  background: #f8fafc;
+}
+
+/* Icon box */
+.minus-plus .mp-box {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border-radius: 6px;
+  background-color: transparent;
+
+  /* PLUS icon */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='5' y='11' width='14' height='2' rx='1' fill='%23f59e0b'/%3E%3Crect x='11' y='5' width='2' height='14' rx='1' fill='%23f59e0b'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+
+  transition: background-color 0.2s ease;
+}
+
+/* CHECKED → minus */
+.filters input[type="checkbox"]:checked + .minus-plus .mp-box {
+  background-color: #f59e0b;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='5' y='11' width='14' height='2' rx='1' fill='white'/%3E%3C/svg%3E");
+}
+
+/* Text */
+.minus-plus .label-text {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+
+
+
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.form-control:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
+}
+
+
+
+/*--------------------------------------------------------------------------*/
+/*----------------------------  SEARCH BAR  -------------------------------*/
+/*--------------------------------------------------------------------------*/
+#searchInput {
+  user-select: none;
+}
+
+/*--------------------------------------------------------------------------*/
+/*----------------------------  JOB COUNT  -------------------------------*/
+/*--------------------------------------------------------------------------*/
+#jobsCount {
+  user-select: none;
+}
+
+/*--------------------------------------------------------------------------*/
+/*----------------------------  ALL BUTTON  -------------------------------*/
+/*--------------------------------------------------------------------------*/
+button {
+  user-select: none;
+}
+
+.mark-applied-btn,
+.apply-btn {
+  user-select: none;
+}
+
+/*--------------------------------------------------------------------------*/
+/*----------------------------  RUN BUTTON  -------------------------------*/
+/*--------------------------------------------------------------------------*/
+.running {
+  --color: #8A91B4;
+  --duration: .8s;
+  transform: scale(var(--scale, 1));
+  position: relative;
+}
+.running .outer {
+  animation: outer var(--duration) linear infinite;
+}
+.running .outer .body {
+  background: var(--color);
+  height: 15px;
+  width: 8px;
+  border-radius: 4px;
+  transform-origin: 4px -10px;
+  position: relative;
+  transform: rotate(32deg);
+  animation: body var(--duration) linear infinite;
+}
+.running .outer .body:before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  bottom: 16px;
+  left: 0;
+  position: absolute;
+  background: var(--color);
+}
+
+/* arms and legs */
+.running .outer .body .arm,
+.running .outer .body .arm:before,
+.running .outer .body .leg,
+.running .outer .body .leg:before {
+  content: '';
+  width: var(--w, 11px);
+  height: 4px;
+  top: var(--t, 0);
+  left: var(--l, 2px);
+  border-radius: 2px;
+  transform-origin: 2px 2px;
+  position: absolute;
+  background: var(--c, var(--color));
+  transform: rotate(var(--r, 0deg));
+  animation: var(--name, arm-leg) var(--duration) linear infinite;
+}
+
+/* specific arms */
+.running .outer .body .arm:before {
+  --l: 7px;
+  --name: arm-b;
+}
+.running .outer .body .arm.front {
+  --r: 24deg;
+  --r-to: 164deg;
+}
+.running .outer .body .arm.front:before {
+  --r: -48deg;
+  --r-to: -36deg;
+}
+.running .outer .body .arm.behind {
+  --r: 164deg;
+  --r-to: 24deg;
+}
+.running .outer .body .arm.behind:before {
+  --r: -36deg;
+  --r-to: -48deg;
+}
+
+/* legs */
+.running .outer .body .leg {
+  --w: 12px;
+  --t: 11px;
+}
+.running .outer .body .leg:before {
+  --t: 0;
+  --l: 8px;
+}
+.running .outer .body .leg.front {
+  --r: 10deg;
+  --r-to: 108deg;
+}
+.running .outer .body .leg.front:before {
+  --r: 18deg;
+  --r-to: 76deg;
+}
+.running .outer .body .leg.behind {
+  --r: 108deg;
+  --r-to: 10deg;
+  --c: none;
+}
+.running .outer .body .leg.behind:before {
+  --c: var(--color);
+  --r: 76deg;
+  --r-to: 18deg;
+}
+.running .outer .body .leg.behind:after {
+  content: '';
+  top: 0;
+  right: 0;
+  height: 4px;
+  width: 6px;
+  clip-path: polygon(2px 0, 6px 0, 6px 4px, 0 4px);
+  border-radius: 0 2px 2px 0;
+  position: absolute;
+  background: var(--color);
+}
+
+/* running-button */
+.running-button {
+  --color: #F6F8FF;
+  --background: #6D58FF;
+  --background-hover: #5c48e6; /* darken(#6D58FF, 3%) */
+  --background-active: #362A89;
+  --background-active-hover: #2e246f; /* darken(#362A89,5%) */
+  --shadow: rgba(0, 9, 61, .2);
+  --padding-y: 12px;
+  --padding-x: 36px;
+  margin: 0;
+  margin-top: 0 !important;
+  padding: var(--padding-y) 0;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  line-height: 23px;
+  position: relative;
+  border: none;
+  overflow: hidden;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: box-shadow .3s, transform .3s, background .4s;
+  /* box-shadow: 0 var(--shadow-y, 4px) var(--shadow-blur, 12px) var(--shadow); */
+  color: var(--color);
+  background: var(--b, var(--background));
+  transform: translateY(var(--y, 0));
+  user-select: none;
+}
+
+.running-button span {
+  display: block;
+  transition: transform .4s ease;
+  transform: translateX(var(--x, 0));
+  padding: 0 var(--padding-x);
+}
+.running-button span.default {
+  --x: var(--default-x, 0);
+}
+.running-button span.active {
+  --x: var(--active-x, -100%);
+  margin-top: -23px;
+}
+.running-button .running {
+  --scale: .64;
+  --color: #fff;
+  position: absolute;
+  top: 13px;
+  right: 100%;
+  transition: transform .4s ease;
+  transform: translateX(var(--running-x, -8px)) scale(var(--scale));
+}
+.running-button:hover {
+  --b: var(--background-hover);
+  --y: -2px;
+  --shadow-y: 8px;
+  --shadow-blur: 16px;
+  --default-x: 4px;
+  --running-x: var(--padding-x);
+}
+.running-button:active {
+  --y: 1px;
+  --shadow-y: 4px;
+  --shadow-blur: 8px;
+}
+.running-button.active {
+  --b: var(--background-active);
+  --default-x: 100%;
+  --active-x: -12%;
+  --running-x: 108px;
+}
+.running-button.active:hover {
+  --b: var(--background-active-hover);
+}
+
+/* keyframes */
+@keyframes outer {
+  50% { transform: translateY(0); }
+  25%, 75% { transform: translateY(4px); }
+}
+@keyframes body {
+  50% { transform: rotate(16deg); }
+  25%, 75% { transform: rotate(24deg); }
+}
+@keyframes arm-leg {
+  50% { transform: rotate(var(--r-to)); }
+}
+@keyframes arm-b {
+  30%, 70% { transform: rotate(var(--r-to)); }
+}
+
+
+
+/* ================================
+   DELETE ALL
+================================ */
+
+/* ======================================================
+   DELETE ALL BUTTON (SCOPED)
+====================================================== */
+
+#delete-all .button {
+  --background: #ef4444;
+  --background-hover: #dc2626;
+  --text: #fff;
+  --icon: #fff;
+  --padding-y: 12px;
+  --padding-x: 36px;
+  margin: 0;
+  margin-top: 0 !important;
+  display: flex;
+  align-items: center;
+  outline: none;
+  cursor: pointer;
+  border: 0;
+  min-width: 120px;
+  border-radius: 8px;
+  line-height: 23px;
+  padding: 12px 16px 12px 12px;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 16px;
+  overflow: hidden;
+  color: var(--text);
+  background: var(--b, var(--background));
+  transition: transform 0.3s, background 0.4s;
+  transform: scale(var(--scale, 1)) translateZ(0);
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+  appearance: none;
+  user-select: none;
+}
+
+#delete-all .button:active {
+  --scale: 0.95;
+}
+
+#delete-all .button:hover {
+  --b: var(--background-hover);
+}
+
+/* Icon + text */
+#delete-all .button .icon,
+#delete-all .button span {
+  display: inline-block;
+  vertical-align: top;
+  transform: translateZ(0);
+}
+
+/* Icon wrapper */
+#delete-all .button .icon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  z-index: 1;
+  margin-right: 8px;
+}
+
+/* SVGs */
+#delete-all .button .icon svg {
+  width: 96px;
+  height: 96px;
+  display: block;
+  position: absolute;
+  left: -36px;
+  top: -36px;
+  will-change: transform;
+  fill: var(--icon);
+  transform: scale(0.254) translateZ(0);
+  animation: var(--name, var(--name-top, none)) 2200ms ease forwards;
+}
+
+#delete-all .button .icon svg.bottom {
+  --name: var(--name-bottom, none);
+}
+
+/* Text animation */
+#delete-all .button span {
+  animation: var(--name-text, none) 2200ms ease forwards;
+}
+
+/* Trigger animation */
+#delete-all .button.delete {
+  --name-top: trash-top;
+  --name-bottom: trash-bottom;
+  --name-text: text;
+}
+
+@keyframes trash-bottom {
+  25%, 32% {
+    transform: translate(32px, 19px) scale(1) translateZ(0);
+  }
+  70%, 80% {
+    transform: translate(32px, 0) scale(0.254) translateZ(0);
+  }
+  100% {
+    transform: scale(0.254) translateZ(0);
+  }
+}
+
+@keyframes trash-top {
+  25%, 32% {
+    transform: translate(38px, 4px) scale(1) rotate(-20deg) translateZ(0);
+  }
+  70%, 80% {
+    transform: translate(32px, 0) scale(0.254) translateZ(0);
+  }
+  100% {
+    transform: scale(0.254) translateZ(0);
+  }
+}
+
+@keyframes text {
+  25% {
+    transform: translate(-4px, -4px) rotate(-20deg) translateZ(0);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-12px, 48px) rotate(-80deg) scale(0.2) translateZ(0);
+  }
+  71% {
+    opacity: 0;
+  }
+  72%, 90% {
+    opacity: 0;
+    transform: translateZ(0);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+/*--------------------------------------------------------------------------*/
+/*----------------------------  UNDO TOAST  -------------------------------*/
+/*--------------------------------------------------------------------------*/
+.notifications {
+	position: fixed;
+	top: 30px;
+	right: 20px;
+	z-index: 9999;
+}
+
+.notifications .toast {
+	width: 350px;
+	position: relative;
+	overflow: hidden;
+	list-style: none;
+	border-radius: 4px;
+	padding: 16px 17px;
+	margin-bottom: 10px;
+	background: #fff;
+	color: #333;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	animation: show_toast 0.3s ease forwards;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+	font-family: 'Poppins', sans-serif;
+}
+
+.toast.hide {
+	animation: hide_toast 0.3s ease forwards;
+}
+
+@keyframes show_toast {
+	0% { transform: translateX(100%); }
+	100% { transform: translateX(0); }
+}
+
+@keyframes hide_toast {
+	0% { transform: translateX(0); opacity:1; }
+	100% { transform: translateX(120%); opacity:0; }
+}
+
+/* Timeline bar */
+.toast::before {
+	position: absolute;
+	content: '';
+	height: 3px;
+	width: 100%;
+	bottom: 0;
+	left: 0;
+	background: #3498db;
+	animation: progress var(--toast-duration, 5000ms) linear forwards;
+}
+
+@keyframes progress {
+	100% { width: 0%; }
+}
+
+.toast .toast-content {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.toast .toast-content span {
+	flex: 1;
+}
+
+.toast button.undo-btn {
+	background: none;
+	border: none;
+	color: #3498db;
+	font-weight: 600;
+	cursor: pointer;
+	margin-left: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ================================
+   EXECUTION RESULT PULSE DOT
+================================ */
+
+.execution-indicator {
+  position: relative;
+  display: inline-block;
+}
+
+.execution-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+}
+
+.pulse {
+    position: relative;
+    display: inline-block;
+    vertical-align: 1px;
+    width: 8px;
+    height: 8px;
+    margin: 0 6px;
+    background: #ffdd40;
+    color: transparent;
+    border-radius: 100%;
+    flex: 0 0 auto;
+    animation: opacity-animation 1s linear;
+  &.red {
+    background: #e60000;
+  }
+  &.orange {
+    background: #ff9900;
+  }
+  &.green {
+    background: #00e600;
+  }
+}
+
+.pulse:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    border-radius: 100%;
+    opacity: .5;
+    transform: translate(-50%,-50%) scale(3);
+    animation: pulse-animation 3s infinite;
+}
+
+
+@keyframes opacity-animation {
+	0% {
+		opacity: 0
+	}
+}
+
+@keyframes pulse-animation {
+	0% {
+		transform: translate(-50%, -50%) scale(0);
+		opacity: .8
+	}
+	70% {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(3)
+	}
+	to {
+		transform: translate(-50%, -50%) scale(0);
+		opacity: 0
+	}
+}
+
+
+/* Colors */
+.pulse-dot.blue {background: #3b82f6;}
+.pulse-dot.blue::before {background: #3b82f6;}
+.pulse-dot.green {background: #22c55e;}
+.pulse-dot.green::before {background: #22c55e;}
+.pulse-dot.red {background: #ef4444;}
+.pulse-dot.red::before {background: #ef4444;}
+.pulse-dot.orange {background: #f97316;}
+.pulse-dot.orange::before {background: #f97316;}
+.pulse-dot.yellow { background: #fbc02d; }
+.pulse-dot.yellow::before {background: #fbc02d;}
+.pulse-dot.gray {background: #9ca3af;}
+.pulse-dot.gray::before {background: #9ca3af;}
+
+
+/* ================================
+   TOOLTIP
+================================ */
+
+
+.custom-tooltip[data-tooltip] {
+  position: relative;
+  cursor: pointer;
+  line-height: 1.2em;
+  display: inline-block;
+}
+
+/* Tooltip text (glass effect) */
+.custom-tooltip[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -2.5rem; /* above the element */
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: rgba(255, 255, 255, 0.15); /* semi-transparent glass */
+  backdrop-filter: blur(8px); /* frosted glass blur */
+  -webkit-backdrop-filter: blur(8px);
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  z-index: 100;
+}
+
+/* Tooltip arrow (glass style) */
+.custom-tooltip[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.15) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s;
+  z-index: 100;
+}
+
+/* Show tooltip on hover */
+.custom-tooltip[data-tooltip]:hover::after,
+.custom-tooltip[data-tooltip]:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-6px); /* gentle lift */
+}
+
+
+.not-interested-btn.custom-tooltip[data-tooltip]::after {
+  background: rgba(255, 255, 255, 0.85);
+}

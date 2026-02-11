@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>ApplyPilot – Profile</title>
+		<!-- Tailwind CSS -->
+		<script src="https://cdn.tailwindcss.com"></script>
+		<!-- Bootstrap -->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		<!-- Font Awesome Free CDN --> 
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body class="min-h-screen flex flex-col">
+		<nav class="bg-white shadow-sm p-4">
+			<h1 class="text-2xl font-bold text-center text-gray-800" id="navTitle">Profile</h1>
+		</nav>
+		<main class="flex-1 container mx-auto px-4 py-8 max-w-3xl mb-24">
+			<!-- Progress Tracker -->
+			<div class="flex justify-between items-center mb-8">
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Auth Info" id="step1">1</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Personal Info" id="step2">2</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Address" id="step3">3</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Work Experience" id="step4">4</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Education" id="step5">5</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Resume" id="step6">6</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Projects" id="step7">7</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Achievements" id="step8">8</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Email Campaign" id="step9">9</div>
+				<div class="w-12 border-t border-gray-300"></div>
+				<div class="progress-step rounded-full w-8 h-8 flex items-center justify-center bg-gray-300 text-sm font-semibold" data-tooltip="Additional Info" id="step10">10</div>
+			</div>
+			<!-- FORM -->
+			<form id="multiStepForm" class="space-y-6">
+				<!-- 1️⃣ Auth Info -->
+				<section class="form-section active" id="form-section-1">
+					<h2 class="text-xl font-semibold mb-4">Auth Information</h2>
+					<div class="grid md:grid-cols-1 gap-4">
+						<input type="email" name="email" placeholder="Email Address" class="form-control" />
+						<input type="username" name="username" placeholder="Username" class="form-control" />
+						<div class="position-relative password-toggle">
+							<input type="password" name="password" id="password" placeholder="Password" class="form-control pe-5" />
+							<i class="fa-solid fa-eye position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" onclick="togglePassword('password', this)" style="cursor: pointer;" aria-label="Toggle password visibility"></i>
+						</div>
+						<div class="position-relative password-toggle">
+							<input type="password" name="secondaryPassword" id="secondaryPassword" placeholder="Secondary Password" class="form-control pe-5" />
+							<i class="fa-solid fa-eye position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" onclick="togglePassword('secondaryPassword', this)" style="cursor: pointer;" aria-label="Toggle password visibility"></i>
+						</div>
+					</div>
+				</section>
+				<!-- 2️⃣ Basic Info -->
+				<section class="form-section active" id="form-section-2">
+					<h2 class="text-xl font-semibold mb-4">Personal Information</h2>
+					<div class="grid md:grid-cols-1 gap-4">
+						<div class="grid md:grid-cols-2 gap-4">
+							<input type="text" name="firstName" placeholder="First Name" class="form-control" />
+							<input type="text" name="lastName" placeholder="Last Name" class="form-control" />
+							<!-- Phone section with extension and number -->
+							<div class="flex gap-2">
+								<select name="phoneExtension" class="form-select w-1/3">
+									<option value="+1" selected>(+1) US / Canada</option>
+									<option value="+44">(+44) UK</option>
+									<option value="+61">(+61) AU</option>
+									<option value="+64">(+64) NZ</option>
+									<option value="+33">(+33) FR</option>
+									<option value="+49">(+49) DE</option>
+									<option value="+39">(+39) IT</option>
+									<option value="+34">(+34) ES</option>
+									<option value="+81">(+81) JP</option>
+									<option value="+82">(+82) KR</option>
+									<option value="+86">(+86) CN</option>
+									<option value="+91">(+91) IN</option>
+									<option value="+92">(+92) PK</option>
+									<option value="+971">(+971) AE</option>
+									<option value="+972">(+972) IL</option>
+									<option value="+7">(+7) RU</option>
+									<option value="+46">(+46) SE</option>
+									<option value="+47">(+47) NO</option>
+									<option value="+45">(+45) DK</option>
+									<option value="+90">(+90) TR</option>
+									<option value="+94">(+94) LK</option>
+									<option value="+27">(+27) ZA</option>
+									<option value="+234">(+234) NG</option>
+									<option value="+254">(+254) KE</option>
+									<option value="+55">(+55) BR</option>
+									<option value="+52">(+52) MX</option>
+									<option value="+58">(+58) VE</option>
+									<option value="+54">(+54) AR</option>
+									<option value="+20">(+20) EG</option>
+									<option value="+212">(+212) MA</option>
+									<option value="+216">(+216) TN</option>
+									<option value="+62">(+62) ID</option>
+									<option value="+63">(+63) PH</option>
+									<option value="+60">(+60) MY</option>
+									<option value="+65">(+65) SG</option>
+									<option value="+66">(+66) TH</option>
+									<option value="+84">(+84) VN</option>
+									<option value="+853">(+853) MO</option>
+									<option value="+852">(+852) HK</option>
+									<option value="+353">(+353) IE</option>
+									<option value="+41">(+41) CH</option>
+									<option value="+43">(+43) AT</option>
+									<option value="+48">(+48) PL</option>
+									<option value="+30">(+30) GR</option>
+									<option value="+36">(+36) HU</option>
+									<option value="+32">(+32) BE</option>
+									<option value="+420">(+420) CZ</option>
+									<option value="+351">(+351) PT</option>
+									<option value="+358">(+358) FI</option>
+									<option value="+380">(+380) UA</option>
+									<option value="+357">(+357) CY</option>
+								</select>
+								<input type="tel" name="phoneNumber" placeholder="Phone Number" class="form-control flex-grow" />
+							</div>
+							<input type="text" name="preferredName" placeholder="Preferred Name" class="form-control" />
+							<!-- Birthdate -->
+							<div class="date-field">
+								<span>Birthday</span>
+								<div class="divider"></div>
+								<input type="date" id="birthday" name="birthDate" style="width: 100%;" />
+							</div>
+							<!-- LinkedIn -->
+							<div class="url-field" style="display: flex; align-items: center; gap: 0.75rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.75rem; background: #fff;">
+								<i class="fab fa-linkedin text-blue-600" style="font-size: 1.25rem;"></i>
+								<div class="divider" style="width: 1px; height: 1.5rem; background: #ddd;"></div>
+								<input type="url" name="linkedin" placeholder="LinkedIn URL" class="" style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.95rem;" />
+							</div>
+							<!-- GitHub -->
+							<div class="url-field" style="display: flex; align-items: center; gap: 0.75rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.75rem; background: #fff;">
+								<i class="fab fa-github text-gray-700" style="font-size: 1.25rem;"></i>
+								<div class="divider" style="width: 1px; height: 1.5rem; background: #ddd;"></div>
+								<input type="url" name="github" placeholder="GitHub URL" class="" style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.95rem;" />
+							</div>
+							<!-- Portfolio -->
+							<div class="url-field" style="display: flex; align-items: center; gap: 0.75rem; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.75rem; background: #fff;">
+								<i class="fa-solid fa-user-tie" style="color: #00bcd4; font-size: 1.25rem;"></i>
+								<div class="divider" style="width: 1px; height: 1.5rem; background: #ddd;"></div>
+								<input type="url" name="portfolio" placeholder="Portfolio URL" class="" style="flex: 1; border: none; outline: none; background: transparent; font-size: 0.95rem;" />
+							</div>
+						</div>
+						<!-- Other URLs -->
+						<div class="links-module grid md:grid-cols-1 gap-2">
+							<div class="links-fields-container" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+							<button type="button" class="btn btn-outline-primary add-link-btn" id="addLink" style="padding: 0.5rem 1rem; margin-top: 0.5rem;">Add Link</button>
+						</div>
+					</div>
+				</section>
+				<!-- 3️⃣ Address -->
+				<section class="form-section" id="form-section-3">
+					<div class="flex items-center justify-between">
+						<h2 class="text-xl font-semibold mb-4">Addresses</h2>
+						<div class="form-check form-switch" style="min-height: 0;">
+							<input class="form-check-input custom-tooltip" type="checkbox" id="llmAddressSelectionEnabled" name="llmAddressSelectionEnabled" data-tooltip="Call AI for Best Address Selection" />
+						</div>
+					</div>
+					<div id="addressContainer"></div>
+					<button type="button" class="btn btn-outline-primary mt-3" id="addAddress">+ Add Address</button>
+				</section>
+				<!-- 4️⃣ Work Experience -->
+				<section class="form-section" id="form-section-4">
+					<h2 class="text-xl font-semibold mb-4">Work Experience</h2>
+					<div id="workContainer"></div>
+					<button type="button" class="btn btn-outline-primary mt-3" id="addWork">+ Add Work Experience</button>
+				</section>
+				<!-- 5️⃣ Education -->
+				<section class="form-section" id="form-section-5">
+					<h2 class="text-xl font-semibold mb-4">Education</h2>
+					<div id="educationContainer"></div>
+					<button type="button" class="btn btn-outline-primary mt-3" id="addEducation">+ Add Education</button>
+				</section>
+				<!-- 6️⃣ Upload Resume -->
+				<section class="form-section" id="form-section-6">
+					<div class="flex items-center justify-between">
+						<h2 class="text-xl font-semibold mb-4">Upload Resume(s)</h2>
+						<div class="form-check form-switch" style="min-height: 0;">
+							<input class="form-check-input custom-tooltip" type="checkbox" id="llmResumeSelectionEnabled" name="llmResumeSelectionEnabled" data-tooltip="Call AI for Best Resume Selection" />
+						</div>
+					</div>
+					<div id="resumeContainer"></div>
+					<button type="button" class="btn btn-outline-primary mt-3" id="addResume">+ Add Resume</button>
+				</section>
+				<!-- 7️⃣ Projects -->
+				<section class="form-section" id="form-section-7">
+					<h2 class="text-xl font-semibold mb-4">Projects</h2>
+					<div id="projectsContainer"></div>
+					<button type="button" class="btn btn-outline-primary mt-3" id="addProject">+ Add Project</button>
+				</section>
+				<!-- 8️⃣ Achievements -->
+				<section class="form-section" id="form-section-8">
+					<h2 class="text-xl font-semibold mb-4">Achievements</h2>
+					<div id="achievementsContainer"></div>
+					<button type="button" class="btn btn-outline-primary mt-3" id="addAchievement">+ Add Achievement</button>
+				</section>
+				<!-- 9️⃣ Email Campaign -->
+				<section class="form-section active" id="form-section-9">
+					<h2 class="text-xl font-semibold mb-4">Email Campaign</h2>
+					<div class="grid md:grid-cols-1 gap-4">
+						<div class="md:col-span-2">
+							<label class="block mb-1 font-medium">Profile Card</label>
+							<textarea name="profile_html_card" class="form-control" rows="3" placeholder="HTML to embed on last page of the value proposition document..."></textarea>
+						</div>
+					</div>
+				</section>
+				<!-- 🔟 Additional Info -->
+				<section class="form-section" id="form-section-10">
+					<h2 class="text-xl font-semibold mb-4">Additional Information</h2>
+					<div class="space-y-3">
+						<!-- Skills -->
+						<div id="skillsContainer" class="mb-2">
+							<div class="flex items-center" style="display: flex; justify-content: space-between; align-items: center;">
+								<!-- Label on the left -->
+								<label class="block font-medium" for="skills" style="margin-right: 10px;">Skills</label>
+								
+								<!-- Group the checkboxes together to align them on the right -->
+								<div class="ml-auto flex items-center" style="display: flex; align-items: center;">
+									<div class="form-check form-switch" style="min-height: 0; margin-left: 10px;">
+										<input class="form-check-input custom-tooltip" type="checkbox" id="enabledUserSkillsSelection" name="enabledUserSkillsSelection" data-tooltip="Use your skills for automation" />
+									</div>
+									<div class="form-check form-switch" style="min-height: 0; margin-left: 10px;">
+										<input class="form-check-input custom-tooltip" type="checkbox" id="enabledJobSkillsSelection" name="enabledJobSkillsSelection" data-tooltip="Use job skills for automation" />
+									</div>
+									<div class="form-check form-switch" style="min-height: 0; margin-left: 10px;">
+										<input class="form-check-input custom-tooltip" type="checkbox" id="enabledRelatedSkillsSelection" name="enabledRelatedSkillsSelection" data-tooltip="Include related skills selection" />
+									</div>
+								</div>
+							</div>
+							<div data-component="free-multiselect" class="p-0">
+								<div class="w-full multiselect-wrapper">
+									<input type="text" id="skills" placeholder="Skills (press enter to add)..." name="skills[]" class="form-control pl-3 flex-1 min-w-[120px]" autocomplete="off" />
+									<div class="chips-container chips-container-floater flex flex-wrap gap-2"></div>
+								</div>
+							</div>
+						</div>
+						<!-- Salary Expectation -->
+						<div id="salaryContainer" class="mb-3">
+							<div class="flex items-center justify-between mb-1">
+								<label class="block font-medium">Expected Salary</label>
+								<!-- Toggle -->
+								<div class="form-check form-switch" style="min-height: 0;">
+									<input class="form-check-input custom-tooltip" type="checkbox" id="salaryRangeToggle" name="useSalaryRange" data-tooltip="Switch input mode" />
+								</div>
+							</div>
+							<!-- Single Salary -->
+							<input type="number" name="salaryExpectation" placeholder="e.g. 100000" class="form-control w-full md:w-2/5" id="salarySingle" />
+							<!-- Salary Range (hidden by default) -->
+							<div id="salaryRange" class="hidden md:w-3/5 flex items-center gap-2">
+								<input type="number" name="salaryExpectationMin" id="salaryRangeMin" placeholder="Min" class="form-control" />
+								<span class="text-gray-500 font-semibold">–</span>
+								<input type="number" name="salaryExpectationMax" id="salaryRangeMax" placeholder="Max" class="form-control" />
+							</div>
+						</div>
+						<!-- Willing to relocate? -->
+						<div class="mb-2">
+							<label class="block font-medium mb-2">Willing to relocate?</label>
+							<div class="toggle-btn">
+								<input type="radio" id="relocationPreference-yes" name="relocationPreference" value="true" />
+								<label for="relocationPreference-yes">Yes</label>
+								<input type="radio" id="relocationPreference-no" name="relocationPreference" value="false" />
+								<label for="relocationPreference-no">No</label>
+							</div>
+						</div>
+						<!-- Relocation Support -->
+						<div class="mb-2">
+							<label class="block font-medium mb-2">Will you need relocation assistance?</label>
+							<div class="toggle-btn">
+								<input type="radio" id="relocationSupport-yes" name="relocationSupport" value="true" />
+								<label for="relocationSupport-yes">Yes</label>
+								<input type="radio" id="relocationSupport-no" name="relocationSupport" value="false" />
+								<label for="relocationSupport-no">No</label>
+							</div>
+						</div>
+						<!-- Reasonable Accomodation Support -->
+						<div class="mb-2">
+							<label class="block font-medium mb-2">Do you require reasonable accommodation?</label>
+							<div class="toggle-btn">
+								<input type="radio" id="accomodationSupport-yes" name="accomodationSupport" value="true" />
+								<label for="accomodationSupport-yes">Yes</label>
+								<input type="radio" id="accomodationSupport-no" name="accomodationSupport" value="false" />
+								<label for="accomodationSupport-no">No</label>
+							</div>
+						</div>
+						<!-- Remote Work Preference -->
+						<div class="mb-2">
+							<label class="block font-medium mb-2">Are you open to remote work?</label>
+							<div class="toggle-btn">
+								<input type="radio" id="remoteWorkPreference-yes" name="remoteWorkPreference" value="true" />
+								<label for="remoteWorkPreference-yes">Yes</label>
+								<input type="radio" id="remoteWorkPreference-no" name="remoteWorkPreference" value="false" />
+								<label for="remoteWorkPreference-no">No</label>
+							</div>
+						</div>	
+
+						<!-- Employment Info -->
+						<div class="grid md:grid-cols-1 gap-4 mt-4">
+							<button class="btn btn-primary open-modal pt-2 pb-2" data-modal="employmentInfo" data-transition="fade">Employment Information</button>
+							<!-- Modal -->
+							<div id="employmentInfo" class="custom-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" aria-hidden="true">
+								<div class="modal-inner bg-white rounded-lg pt-6 pb-0 max-w-2xl w-full shadow-lg transform transition-all duration-300">
+									<div class="px-6">
+										<h3 class="text-xl font-bold mb-4">Employment Information</h3>
+										<!-- Visa Sponsorship Requirement -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Will you now or in the future require visa sponsorship?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="visaSponsorshipRequirement-yes" name="visaSponsorshipRequirement" value="true" />
+												<label for="visaSponsorshipRequirement-yes">Yes</label>
+												<input type="radio" id="visaSponsorshipRequirement-no" name="visaSponsorshipRequirement" value="false" />
+												<label for="visaSponsorshipRequirement-no">No</label>
+											</div>
+										</div>
+										<!-- Visa Status -->
+										 <div class="mb-4">
+											<label class="block font-medium mb-2">What is your current visa status?</label>
+											<input type="text" name="visaStatus" placeholder="" class="form-control">
+										</div>	
+										<!-- Work Authorization -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Are you authorized to work in the country you're applying?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="workAuthorization-yes" name="workAuthorization" value="true" />
+												<label for="workAuthorization-yes">Yes</label>
+												<input type="radio" id="workAuthorization-no" name="workAuthorization" value="false" />
+												<label for="workAuthorization-no">No</label>
+											</div>
+										</div>
+										<!-- Right To Work -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Do you meet the legal requirements to work?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="rightToWork-yes" name="rightToWork" value="true" />
+												<label for="rightToWork-yes">Yes</label>
+												<input type="radio" id="rightToWork-no" name="rightToWork" value="false" />
+												<label for="rightToWork-no">No</label>
+											</div>
+										</div>
+										<!-- Background Check -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Are you able to pass a background check?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="backgroundCheck-yes" name="backgroundCheck" value="true" />
+												<label for="backgroundCheck-yes">Yes</label>
+												<input type="radio" id="backgroundCheck-no" name="backgroundCheck" value="false" />
+												<label for="backgroundCheck-no">No</label>
+											</div>
+										</div>
+										<!-- Export Control and Employment Restrictions -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Are there any legal or regulatory restrictions that would limit your ability to work in this position or country?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="employmentRestrictions-yes" name="employmentRestrictions" value="true" />
+												<label for="employmentRestrictions-yes">Yes</label>
+												<input type="radio" id="employmentRestrictions-no" name="employmentRestrictions" value="false" />
+												<label for="employmentRestrictions-no">No</label>
+											</div>
+										</div>
+										<!-- Non complete or Contractual obligation -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Are you subject to a non-compete agreement?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="nonCompleteRestrictions-yes" name="nonCompleteRestrictions" value="true" />
+												<label for="nonCompleteRestrictions-yes">Yes</label>
+												<input type="radio" id="nonCompleteRestrictions-no" name="nonCompleteRestrictions" value="false" />
+												<label for="nonCompleteRestrictions-no">No</label>
+											</div>
+										</div>
+										<!-- Security Clearance -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Do you currently have or are you eligible for a security clearance?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="securityClearance-yes" name="securityClearance" value="true" />
+												<label for="securityClearance-yes">Yes</label>
+												<input type="radio" id="securityClearance-no" name="securityClearance" value="false" />
+												<label for="securityClearance-no">No</label>
+											</div>
+										</div>
+										<!-- Citizenship or Permanent Residency -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Are you a citizen or permanent resident in the country you're applying?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="citizenshipStatus-yes" name="citizenshipStatus" value="true" />
+												<label for="citizenshipStatus-yes">Yes</label>
+												<input type="radio" id="citizenshipStatus-no" name="citizenshipStatus" value="false" />
+												<label for="citizenshipStatus-no">No</label>
+											</div>
+										</div>
+										<!-- Gender -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">What is your gender?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="male" name="gender" value="Male" />
+												<label for="male">Male</label>
+												<input type="radio" id="female" name="gender" value="Female" />
+												<label for="female">Female</label>
+												<input type="radio" id="nonBinary" name="gender" value="Non-Binary" />
+												<label for="nonBinary">Non-Binary</label>
+												<input type="radio" id="decline" name="gender" value="Decline to state" />
+												<label for="decline">Decline to state</label>
+											</div>
+										</div>
+										<!-- Sexual Orientation? -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">What is your sexual orientation?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="heterosexual" name="sexualOrientation" value="Heterosexual / Straight" />
+												<label for="heterosexual">Heterosexual / Straight</label>
+												<input type="radio" id="gayOrLesbian" name="sexualOrientation" value="Gay or Lesbian" />
+												<label for="gayOrLesbian">Gay or Lesbian</label>
+												<input type="radio" id="bisexual" name="sexualOrientation" value="Bisexual" />
+												<label for="bisexual">Bisexual</label>
+												<input type="radio" id="pansexual" name="sexualOrientation" value="Pansexual" />
+												<label for="pansexual">Pansexual</label>
+												<input type="radio" id="asexual" name="sexualOrientation" value="Asexual" />
+												<label for="asexual">Asexual</label>
+												<input type="radio" id="queer" name="sexualOrientation" value="Queer" />
+												<label for="queer">Queer</label>
+												<input type="radio" id="preferNotToSay" name="sexualOrientation" value="Prefer not to say" />
+												<label for="preferNotToSay">Prefer not to say</label>
+											</div>
+										</div>
+										<!-- LGBTQ+ -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Do you identify as LGBTQ+?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="lgbtq-yes" name="lgbtqStatus" value="true" />
+												<label for="lgbtq-yes">Yes</label>
+												<input type="radio" id="lgbtq-no" name="lgbtqStatus" value="false" />
+												<label for="lgbtq-no">No</label>
+												<input type="radio" id="lgbtq-decline" name="lgbtqStatus" value="Decline to state" />
+												<label for="lgbtq-decline">Decline to state</label>
+											</div>
+										</div>
+										<!-- Ethnicity -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Ethnicity</label>
+											<div class="multi-select-container" id="ethnicity" data-multiselect-options>
+												<!-- Wrap chips + input together -->
+												<div class="multiselect-wrapper flex flex-wrap items-center" style="width:100%;">
+													<div class="chips-container flex flex-wrap gap-2"></div>
+													<input type="text" placeholder="Select..." name="ethnicity[]" class="pl-0 py-0 border-none focus:ring-0 outline-none flex-1 min-w-[120px]" autocomplete="off" style="width:100%;" />
+													<!-- Dropdown options list -->
+													<ul class="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto hidden z-50" data-options-list>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Black or African American">Black or African American</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="East Asian">East Asian</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Hispanic or Latino">Hispanic or Latino</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Middle Eastern">Middle Eastern</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Native American or Alaskan">Native American or Alaskan</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Native Hawaiian or Pacific Islander">Native Hawaiian or Pacific Islander</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="South Asian">South Asian</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Southeast Asian">Southeast Asian</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="White">White</li>
+														<li class="px-3 py-2 cursor-pointer hover:bg-blue-100" data-value="Other">Other</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+										<!-- Hispanic or Latino -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Are you Hispanic or Latino?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="hispanicOrLatino-yes" name="hispanicOrLatino" value="true" />
+												<label for="hispanicOrLatino-yes">Yes</label>
+												<input type="radio" id="hispanicOrLatino-no" name="hispanicOrLatino" value="false" />
+												<label for="hispanicOrLatino-no">No</label>
+											</div>
+										</div>
+										<!-- Military Service -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Do you have prior military or armed forces service?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="militaryService-yes" name="militaryService" value="true" />
+												<label for="militaryService-yes">Yes</label>
+												<input type="radio" id="militaryService-no" name="militaryService" value="false" />
+												<label for="militaryService-no">No</label>
+											</div>
+										</div>
+										<!-- Veteran Status -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Are you a veteran?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="veteranStatus-yes" name="veteranStatus" value="true" />
+												<label for="veteranStatus-yes">Yes</label>
+												<input type="radio" id="veteranStatus-no" name="veteranStatus" value="false" />
+												<label for="veteranStatus-no">No</label>
+												<input type="radio" id="veteranStatus-decline" name="veteranStatus" value="Decline to state" />
+												<label for="veteranStatus-decline">Decline to state</label>
+											</div>
+										</div>
+										<!-- Disability -->
+										<div class="mb-4">
+											<label class="block font-medium mb-2">Do you have a disability?</label>
+											<div class="toggle-btn">
+												<input type="radio" id="disabilityStatus-yes" name="disabilityStatus" value="true" />
+												<label for="disabilityStatus-yes">Yes</label>
+												<input type="radio" id="disabilityStatus-no" name="disabilityStatus" value="false" />
+												<label for="disabilityStatus-no">No</label>
+												<input type="radio" id="disabilityStatus-decline" name="disabilityStatus" value="Decline to state" />
+												<label for="disabilityStatus-decline">Decline to state</label>
+											</div>
+										</div>
+									</div>
+									<div class="text-end" style="position: sticky; bottom: 0; left: 20; right: 0; background: white; padding: 1rem; padding-right: 2rem; border-top: 1px solid #e5e7eb;">
+										<button class="btn btn-outline-success close-modal">Done</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+
+
+
+
+
+
+					</div>
+				</section>
+				<!-- 0️⃣ 1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 9️⃣ 🔟 -->
+			</form>
+		</main>
+		<!-- Fixed Bottom Nav -->
+		<div class="fixed-nav flex justify-between">
+			<button type="button" id="prevBtn" class="btn btn-outline-secondary" disabled>Previous</button>
+			<div class="ajax-button">
+				<div class="fa fa-check done"></div>
+				<div class="fa fa-close failed"></div>
+				<button type="button" id="nextBtn" class="btn btn-primary submit">Next</button>
+			</div>
+		</div>
+
+		<script src="script.js" defer></script>
+		<script src="app.js" defer></script>
+	</body>
+</html>

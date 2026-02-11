@@ -1,0 +1,165 @@
+ApplyPilot
+├── app
+│   ├── models
+│   │   └── bge-base-en-v1.5
+│   │       ├── onnx
+│   │       │   ├── model.onnx
+│   │       │   ├── model_bnb4.onnx
+│   │       │   ├── model_fp16.onnx
+│   │       │   ├── model_int8.onnx
+│   │       │   ├── model_q4.onnx
+│   │       │   ├── model_q4f16.onnx
+│   │       │   ├── model_quantized.onnx
+│   │       │   └── model_uint8.onnx
+│   │       ├── config.json
+│   │       ├── quantize_config.json
+│   │       ├── README.md
+│   │       ├── special_tokens_map.json
+│   │       ├── tokenizer.json
+│   │       ├── tokenizer_config.json
+│   │       └── vocab.txt
+│   ├── modules
+│   │   ├── ats
+│   │   │   ├── config
+│   │   │   │   ├── greenhouseConfig.js
+│   │   │   │   └── workdayConfig.js
+│   │   │   ├── utils
+│   │   │   │   ├── greenhouseUtils.js
+│   │   │   │   └── workdayUtils.js
+│   │   │   ├── greenhouse.js
+│   │   │   └── workday.js
+│   │   ├── form
+│   │   │   ├── formHandlers.js
+│   │   │   ├── formResolver.js
+│   │   │   └── formUtils.js
+│   │   ├── jobBoards
+│   │   │   ├── config
+│   │   │   │   ├── hiringcafeConfig.js
+│   │   │   │   └── jobrightsConfig.js
+│   │   │   ├── utils
+│   │   │   │   ├── hiringcafeUtils.js
+│   │   │   │   └── jobrightsUtils.js
+│   │   │   ├── hiringcafe.js
+│   │   │   └── jobrights.js
+│   │   └── registry.js
+│   ├── offscreen
+│   │   ├── offscreen.html
+│   │   └── offscreen.js
+│   ├── scripts
+│   │   ├── generateLabelEmbeddings.js
+│   │   ├── generateThresholds.js
+│   │   └── similarity.js
+│   ├── services
+│   │   └── gmail.js
+│   ├── shared
+│   │   ├── config
+│   │   │   ├── atsConfig.js
+│   │   │   ├── config.js
+│   │   │   ├── jobBoardConfig.js
+│   │   │   └── labelConfig.js
+│   │   ├── utils
+│   │   │   ├── atsUtils.js
+│   │   │   ├── jobBoardUtils.js
+│   │   │   ├── labelUtils.js
+│   │   │   ├── settings.js
+│   │   │   └── utility.js
+│   │   └── labelEmbeddings.json
+│   ├── ui
+│   │   ├── css
+│   │   │   ├── ats
+│   │   │   ├── jobboard
+│   │   │   └── bootstrap.min.css
+│   │   ├── scripts
+│   │   │   ├── ats
+│   │   │   ├── jobboard
+│   │   │   │   ├── hiringcafe.js
+│   │   │   │   └── jobrights.js
+│   │   │   └── utils
+│   │   │       ├── ats.js
+│   │   │       ├── jobboard.js
+│   │   │       └── shared.js
+│   │   ├── popup.css
+│   │   ├── popup.html
+│   │   └── popup.js
+│   ├── background.js
+│   └── content.js
+├── assets
+│   └── icon.png
+├── config
+│   ├── addressBank.js
+│   └── user_data.js
+├── job_scraper
+│   └── jobrights
+│       └── jobrights-v3.js
+├── server
+│   ├── app
+│   │   ├── services
+│   │   │   ├── database.py
+│   │   │   ├── get_best_fit_resume.py
+│   │   │   ├── get_nearest_address.py
+│   │   │   ├── question_resolver.py
+│   │   │   ├── run_jobs.py
+│   │   │   ├── search_chatgpt.py
+│   │   │   └── shared.py
+│   │   └── server.py
+│   ├── config
+│   │   └── env_config.py
+│   ├── credentials
+│   ├── modules
+│   │   ├── breakpoint_notifier
+│   │   │   ├── sounds
+│   │   │   │   └── radiant-sound.wav
+│   │   │   └── breakpoint_notifier.py
+│   │   ├── browser
+│   │   │   ├── assets
+│   │   │   │   └── tor_connected_successfully.png
+│   │   │   └── browser_utils.py
+│   │   ├── chatgpt
+│   │   │   ├── assets
+│   │   │   │   └── human_verification_checkbox.png
+│   │   │   └── chatgpt.py
+│   │   ├── utils
+│   │   │   ├── assets
+│   │   │   ├── helpers.py
+│   │   │   ├── js_utils.py
+│   │   │   └── pyautogui_utils.py
+│   │   └── __init__.py
+│   ├── tokens
+│   └── notes.py
+├── venv_applypilot
+├── web
+│   ├── public
+│   │   ├── jobs
+│   │   │   ├── index.html
+│   │   │   ├── jobs.css
+│   │   │   └── jobs.js
+│   │   ├── app.js
+│   │   ├── index.html
+│   │   ├── script.js
+│   │   ├── style.css
+│   │   └── utility.html
+│   ├── uploads
+│   │   ├── achievements
+│   │   │   └── 17691143345203222
+│   │   │       └── IEEE AISS'24 Scholarship Award (Global Top 20).pdf
+│   │   ├── projects
+│   │   │   └── 17691143344007694
+│   │   │       └── Research ~ Geopose_enabled_Camera_Imagery_Interoperability_with_Geo_AI_in_Urban_Digital_Twins.pdf
+│   │   └── resumes
+│   │       ├── 17702053960612313
+│   │       │   └── Kalp Resume.pdf
+│   │       └── 17703415070097884
+│   │           └── Kalp Resume.pdf
+│   ├── fileUtils.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── server.js
+│   ├── test-server.js
+│   └── userData.json
+├── manifest.json
+├── notes.txt
+├── package-lock.json
+├── package.json
+├── project_tree.py
+├── speedyapply-content.js
+└── structure.txt

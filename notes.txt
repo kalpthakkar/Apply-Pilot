@@ -1,0 +1,1318 @@
+"skills": [
+    "Python",
+    "C++",
+    "Javascript",
+    "Autonomous System",
+    "DevOps",
+    "CI/CD",
+    "Git",
+    "Docker",
+    "IoT",
+    "Artificial Intelligence",
+    "Natural Language Processing",
+    "LLM",
+    "AI Agents",
+    "Kubernetes",
+    "REST API",
+    "SQL",
+    "GraphQL",
+    "Agentic Workflow",
+    "Google Cloud Platform",
+    "AWS",
+    "Terraform",
+    "Ansible",
+    "Web Development",
+    "ETL",
+    "Data Science",
+    "Intelligent Systems"
+  ]
+
+let resolvedAddress; // Store resolved address result
+
+export function getResolvedAddress() {
+	return resolvedAddress;
+}
+
+export function setResolvedAddress(address) {
+	resolvedAddress = address;
+}
+
+export async function resolveNearestAddress(jobLocation, timeoutSeconds = null) {
+
+	if (resolvedAddress) return resolvedAddress;
+	if (!jobLocation) return { success: false, payload: null, errors: ["Invalid job location"] };
+
+	try {
+		// Wrap sendMessage in a Promise
+		const request = new Promise((resolve, reject) => {
+			chrome.runtime.sendMessage(
+				{
+					action: "getNearestAddress",
+					payload: { location: jobLocation }
+				},
+				(response) => {
+					if (chrome.runtime.lastError) {
+						reject(new Error(chrome.runtime.lastError.message));
+					} else {
+						resolve(response);
+					}
+				}
+			);
+		});
+
+		// Apply timeout if specified
+		const response = timeoutSeconds
+			? await Promise.race([
+				  request,
+				  new Promise((_, reject) =>
+					  setTimeout(() => reject({ success: false, payload: null, errors: ["Server request timeout"] }), timeoutSeconds * 1000)
+				  )
+			  ])
+			: await request;
+
+		if (!response) {
+			return { success: false, payload: null, errors: ["No response received from background"] };
+		}
+		if (response.success) {
+			setResolvedAddress(response.payload);
+			return { success: true, payload: response.payload, errors: [] };
+		};
+		return { success: false, payload: response.payload, errors: response.errors };
+
+	} catch (err) {
+		console.error("[Utility] getNearestAddress error:", err);
+		return { success: false, payload: null, errors: [err.message] };
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+export async function resolveQuestions(page, {maxIterations = 10, batchDelayMs = 200} = {}) {
+
+	const timeout = (ms, payload) => new Promise(resolve => setTimeout(() => resolve({ success: false, reason: 'timeout', ...payload}), ms));
+
+	function getQuestionId(question) {
+		// Use label text + type + field DOM path as a unique identifier
+
+		const type = question.type || 'unknown';
+		// const labelText = question.label?.textContent?.trim() ?? '';
+		const labelText = question.label?.textContent?.replace(/\s+/g, ' ').trim().toLowerCase() || 'no-label';
+		const fieldSignature = question.fields.map(f => f.tagName + (f.id ? `#${f.id}` : '')).join('|');
+		return `${type}::${labelText}::${fieldSignature}`;
+	}
+
+    // Fetch relevant keys (for page) outside iteration.
+    const knownQuestionKeys = getKnownQuestionKeys(page);
+    const labelEmbeddingKeys = getLabelEmbeddingKeys(page);
+
+    const resolvedQuestions = [];
+	let unresolvedQuestions = [];
+    const processedQuestionIds = new Set();
+
+    let iteration = 0;
+    while (iteration < maxIterations) {
+        iteration++;
+
+		console.log(`---------- Iteration ${iteration} ------------`);
+
+        // 1️⃣ Always re-scrape current DOM
+        const currentQuestions = await getQuestions();
+
+        // 2️⃣ Filter unresolved questions
+        unresolvedQuestions = currentQuestions.filter(q => { return !processedQuestionIds.has(getQuestionId(q)); });
+
+        // No new work → we're done
+        if (!unresolvedQuestions.length) {
+            break;
+        }
+
+		// Resolve (find nearest) address[] or (find best) resume[] 
+		// if ∃(x) P(x is unresolved question) ⇒ address or resume category.
+		if (!getResolvedAddress()) { // Pre-resolve address
+
+			const needsAddress = unresolvedQuestions.some(q => q.dbAnswerKey?.startsWith(DB_KEY_MAP.ADDRESSES + '.'));
+
+			if (needsAddress) {
+				const jobDetails = getJobDetails();
+				let nearestAddress;
+				if (jobDetails?.jobLocation) {
+					// Request getNearestAddress service to server through background.js; or gets stored address.
+					nearestAddress = await resolveNearestAddress(jobDetails.jobLocation);
+				} 
+				if (!nearestAddress?.success) {
+					setResolvedAddress(resolveAnswerValue(DB_KEY_MAP.ADDRESSES)[Number(resolveAnswerValue(DB_KEY_MAP.PRIMARY_ADDRESS_CONTAINER_IDX))]);
+				}
+			}
+		}
+
+
+        // 3️⃣ Create PARALLEL execution promises (IMPORTANT: return them)
+        const fillPromises = unresolvedQuestions.map(async (question) => {
+
+            const locators = []; // Array[HTMLElement || string Selectors]
+            let val;
+
+            /* -------------------------------------------------
+            * ELEMENT MATCH (STRONGEST SIGNAL)
+            * ------------------------------------------------- */
+			/** @type {QuestionEntry|null} */
+			const matchedQuestion = matchQuestionWithKnownElements(question, knownQuestionKeys);
+            if (matchedQuestion) {
+
+                if (matchedQuestion.hasOwnProperty('locators')) locators.push(...matchedQuestion.locators); // Result: locators <- Push Array[string Selectors]
+
+                val = (typeof matchedQuestion?.value === 'function') 
+                    ? resolveAnswerValue(USER_DB, matchedQuestion?.value, undefined)
+                    : matchedQuestion?.value;
+
+                if (val === null || val === undefined) {
+
+					if (matchedQuestion?.dbAnswerKey.split('.').length > 1) {
+						// Address Category
+						if (matchedQuestion?.dbAnswerKey?.startsWith(DB_KEY_MAP.ADDRESSES + '.')) {
+							// Set address value
+							val = getResolvedAddress()[matchedQuestion?.dbAnswerKey.split('.')[1]];
+							console.log("SET VAL", val);
+						}
+						// Resume Category
+						else if (matchedQuestion?.dbAnswerKey?.startsWith(DB_KEY_MAP.RESUME + '.')) {
+							// const bestResume = await getBestResume(resolveAnswerValue(DB_KEY_MAP.RESUME), getJobDetails(), resolveAnswerValue(DB_KEY_MAP.PRIMARY_RESUME_CONTAINER_IDX));
+						}		
+					}
+
+					val = resolveAnswerValue(USER_DB, matchedQuestion?.dbAnswerKey, undefined);
+				}
+            }
+            
+            /* -------------------------------------------------
+            * LABEL MATCH (AVERAGE SIGNAL)
+            * ------------------------------------------------- */
+            if (val === null || val === undefined) {
+				if (matchedQuestion?.dbAnswerKey.split('.')[0] == DB_KEY_MAP.ADDRESSES) {
+					console.log("YOOOOOOOOOOOOOOOOOOOO:", matchedQuestion?.dbAnswerKey, '   has value:::', val);
+				}
+                const dbAnswerKey = await matchQuestionWithLabelEmbeddings(question, labelEmbeddingKeys);
+                if (dbAnswerKey) val = resolveAnswerValue(USER_DB, dbAnswerKey);
+            }
+
+            /* -------------------------------------------------
+            * LLM FALLBACK
+            * ------------------------------------------------- */
+            if (val === null || val === undefined) {
+                // invokeLLM
+            }
+
+
+            /** -------------------------------------------------
+             * question.fields -> Array[HTMLElement]
+             * Apply filter over fields based on type (true(valid)/false(invalid) for each field derived from FIELD_VALIDATOR).
+             * Result: locators <- Push Array[valid HTMLElement]
+            ------------------------------------------------- */
+            locators.push(
+                ...(FIELD_VALIDATOR.hasOwnProperty(question.type)
+                    ? question.fields.filter(FIELD_VALIDATOR[question.type])
+                    : question.fields)
+            );
+
+
+
+            // 🔴 CRITICAL: Promise.race must be RETURNED
+            return Promise.race([
+                (async () => {
+					const handler = await getQuestionHandler(question, locators, val);
+
+					try {
+						await handler();
+						return {success: true, question, type: question.type};
+					} catch (err) {
+						return {success: false, question, type: question.type, reason: 'execution_failed', error: err};
+					}
+				})(),
+                timeout(
+                    (matchedQuestion?.TIMEOUT ?? FIELD_TIMEOUT_MAP[question.type] ?? 5) * 1000, 
+                    {success: false, question, type: question.type, reason: 'timeout'}
+                )
+            ]);
+        }).filter(Boolean); // remove nulls
+
+
+        // 4️⃣ Wait for ALL parallel executions
+        const results = await Promise.allSettled(fillPromises);
+
+        let anyResolvedThisRound = false;
+
+        // 5️⃣ Process results
+		results.forEach(r => {
+			if (r.status === 'fulfilled') {
+				const res = r.value;
+				if (res.success) {
+					processedQuestionIds.add(getQuestionId(res.question));
+					resolvedQuestions.push(res);
+					anyResolvedThisRound = true;
+					// console.log('Filled:', res.question);
+				} else {
+					console.warn(`FAILED: ${res.question?.label?.textContent}`,  {
+						question: res.question,
+						reason: res.reason,
+						error: res.error
+					});
+				}
+
+			} else {
+				// truly fatal / programming error
+				console.error('Rejected promise:', r.reason);
+				// BLOCK EXECUTION
+			}
+		});
+
+        // 6️⃣ If nothing resolved, stop (prevents infinite loop)
+        if (!anyResolvedThisRound) {
+            break;
+        }
+
+        // 7️⃣ Allow DOM to settle for dynamic fields
+        await new Promise(r => setTimeout(r, batchDelayMs));
+    }
+
+	// 8️⃣ Final unresolved questions snapshot
+    const finalQuestions = await getQuestions();
+	unresolvedQuestions = finalQuestions.filter(q => {
+        const qId = getQuestionId(q);
+        return !processedQuestionIds.has(qId);
+    });
+
+    return {resolved: resolvedQuestions, unresolved: unresolvedQuestions};
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+As you see in resolveQuestions, all questions of type:
+
+{
+  label: HTMLElement | null,
+  fields: HTMLElement[],
+  type: string,
+  required: boolean
+}
+
+are validated against known questions using `getKnownQuestions` function. However, currently we are only leveraging the question.fields to find the match. I want to enable label based matching as well (LABEL_VALIDATOR) which is a smart function to contextually/semantically understand the set possible labels for the field type - initially we can start by fuzzy matching like we'd have a list of tuple comsisting of a possible label and threshold, and if atleast one match is found true is returned indicating that since label matched, the question belongs to this category and fill it accordingly (example for question.label = "What is your email?", the validator could check [("Email address", 85)], etc). Feel free to suggest better idea or approach, key is to implement label based identification/matching which is as robust advance and superior as possible. It is important to note that since fields personally belong to the ats and could have different id/attributes, therefore hard coding the 'VALIDATOR' in workdayConfig.js makes perfect sense to not miss known question, however our label validation approach for question matching is common (since labels matching could be global) therefore we'll have to create a shared/common file in relevant folder which holds all validators for each of the question's answer field in our database given below (or atleast implement the mechanism and I'll expand for all questions later). Database looks like:
+
+{
+  "email": "kalpthakkar2001@gmail.com",
+  "password": "K41p@2401",
+  "secondaryPassword": "K41pT#4kkar@2401",
+  "firstName": "Kalp",
+  "lastName": "Thakkar",
+  "phoneExtension": "+1",
+  "phoneNumber": "3864567971",
+  "preferredName": "Kalp",
+  "birthDate": "2001-04-02",
+  "linkedin": "https://www.linkedin.com/in/kalpthakkar",
+  "github": "https://github.com/kalpthakkar",
+  "portfolio": "",
+  "otherURLs": [
+    "https://scholar.google.com/citations?user=g7AQ9N0AAAAJ",
+    ],
+    ...
+
+...
+
+These label validators can be correctly mapped at relevant corresponding question in 'getKnownQuestions', example:
+
+For:
+         {
+                    TYPE: 'text',
+                    VALIDATOR: (el) => el.getAttribute('data-automation-id') == 'email',
+                    VALUE: USER.email,
+                    NOTES: 'Email Address*'
+                },
+
+We can add label validator as well:
+
+         {
+                    TYPE: 'text',
+                    LABEL_VALIDATOR: ...derived form other file (example getLabelValidator(QUESTION.EMAIL <-- enum) or getLabelValidator[QUESTION.EMAIL])
+                    ELEMENT_VALIDATOR: (el) => el.getAttribute('data-automation-id') == 'email', 
+                    VALUE: USER.email,
+                    NOTES: 'Email Address*'
+                },
+
+...
+
+
+So now resolveQuestions can utilize both Label-validator and element-validator for identifying the correct field with more robustness, capability, and scalability.
+
+
+---
+
+Feel free to let me know and expand your thoughts on what's the best system design. You now know what I want to achieve, feel free to suggest better approach and tell me how should I proceed from my existing codebase?
+
+
+
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+
+
+
+Got it — thanks for the patience. Let’s **reset and do this cleanly**, step-by-step, with **clear architecture**, **no paid APIs**, **no magic**, and **realistic constraints of a Chrome extension**.
+
+I’ll answer in this order:
+
+1. **What problem we are solving (precisely)**
+2. **What approaches exist**
+3. **Which embedding model is best (including your Ollama model)**
+4. **Where embeddings should live (and where they should NOT)**
+5. **A clean, scalable architecture for your codebase**
+6. **Concrete recommendation (what you should actually do next)**
+
+No code yet — first we lock the system design.
+
+---
+
+## 1️⃣ What problem are we solving (precisely)
+
+You already do this well:
+
+* **Element-based matching** (`id`, `name`, `data-automation-id`)
+* ATS-specific → deterministic → correct when present
+
+What you’re missing:
+
+* **Label-based semantic identification** when:
+
+  * IDs change
+  * Different ATS vendors
+  * Different phrasing (“Your Email”, “Email Address”, “E-mail”)
+  * Localization / slight rewording
+
+Constraints:
+
+* ❌ No paid APIs
+* ❌ No heavy runtime cost (extensions must be fast)
+* ❌ No fragile regex / rule explosion
+* ✅ Must scale to ~50 question types
+* ✅ Must be deterministic & debuggable
+
+---
+
+## 2️⃣ All possible approaches (and why some are bad)
+
+### ❌ Option A: Regex / normalization / rules
+
+You already identified the issue correctly:
+
+* Hard to scale
+* Easy to break
+* Impossible to cover all phrasing variants
+
+**Reject.**
+
+---
+
+### ❌ Option B: Compute embeddings at runtime in extension
+
+Example: For each page:
+
+```
+10 questions × 50 known keys = 500 embeddings
+```
+
+Problems:
+
+* Too slow
+* Too heavy
+* Chrome extensions should not do this
+* TFJS models are big and slow to load
+
+**Reject.**
+
+---
+
+### ❌ Option C: Vector DB (ChromaDB) inside extension
+
+This is the **wrong tool** here.
+
+Why:
+
+* Chrome extensions **cannot run a vector DB**
+* IndexedDB ≠ vector DB (no cosine indexing)
+* Overkill for ~200 vectors
+* Adds infra complexity for zero gain
+
+**Reject.**
+
+---
+
+### ✅ Option D: Precomputed embeddings + runtime similarity
+
+This is the **correct mental model**.
+
+Key idea:
+
+> Only ONE side is dynamic (labels on page)
+> The other side (known questions) is static
+
+So we:
+
+* Precompute embeddings **once**
+* Store them as static assets
+* At runtime:
+
+  * Compute embedding for each detected label
+  * Compare against precomputed vectors
+
+This gives:
+
+* O(N) comparisons
+* Deterministic
+* Fast
+* Scalable
+
+---
+
+## 3️⃣ Which embedding model is best?
+
+### You mentioned:
+
+> `mxbai-embed-large:latest` running locally on Ollama
+
+### Short answer:
+
+✅ **Yes — this is an excellent choice**
+
+### Why it’s good:
+
+* Strong semantic understanding
+* Open source
+* No cost
+* Stable embeddings
+* Designed exactly for short text similarity
+* Much better than MiniLM / USE-lite for labels
+
+### Important realization:
+
+⚠️ **This model must NOT run inside the Chrome extension**
+
+Chrome extensions:
+
+* Cannot talk to Ollama directly
+* Cannot run large embedding models
+* Cannot bundle a 400MB model
+
+So we use Ollama **only at build-time or dev-time**, not runtime.
+
+---
+
+## 4️⃣ Where embeddings should live (this is critical)
+
+### ❌ NOT inside Chrome extension runtime
+
+* No model inference
+* No Ollama calls
+* No TFJS
+
+### ❌ NOT in a vector DB
+
+* Not needed
+* Too small dataset
+
+---
+
+### ✅ Correct place: **Static JSON file**
+
+Example:
+
+```
+app/shared/labelEmbeddings.json
+```
+
+Structure:
+
+```json
+{
+  "email": [
+    {
+      "text": "Email",
+      "vector": [0.0123, -0.9981, ...]
+    },
+    {
+      "text": "Email Address",
+      "vector": [...]
+    }
+  ],
+  "firstName": [
+    {
+      "text": "First Name",
+      "vector": [...]
+    }
+  ]
+}
+```
+
+Why this is perfect:
+
+* Loaded once
+* Very fast
+* No async complexity
+* Deterministic
+* Works offline
+* Chrome extension friendly
+
+---
+
+## 5️⃣ How embeddings are generated (step-by-step)
+
+### 🧠 This happens **outside** the extension
+
+You create a **one-time script**:
+
+```
+scripts/generateLabelEmbeddings.js
+```
+
+Flow:
+
+1. Define all canonical label variants
+2. Call Ollama (`mxbai-embed-large`)
+3. Save vectors to JSON
+4. Commit JSON to repo
+5. esbuild bundles it
+
+### Example flow (conceptual):
+
+```txt
+LABEL STRINGS
+↓
+Ollama embedding (dev machine)
+↓
+labelEmbeddings.json
+↓
+Chrome extension loads JSON
+↓
+Runtime similarity only
+```
+
+This happens:
+
+* On demand
+* When you add new question types
+* NOT on every build
+* NOT at runtime
+
+---
+
+## 6️⃣ Runtime matching flow (clear & deterministic)
+
+### Step-by-step at runtime:
+
+1. `getQuestions()` detects:
+
+```js
+{
+  label: HTMLElement,
+  fields: HTMLElement[],
+  type: "text"
+}
+```
+
+2. `resolveQuestions()` calls:
+
+```js
+matchQuestionWithKnownCandidates(question, candidates)
+```
+
+3. Inside matching:
+
+Priority order (VERY IMPORTANT):
+
+#### 1️⃣ Element validator (current logic)
+
+```js
+id / name / data-automation-id
+```
+
+✔ Fast
+✔ Exact
+✔ ATS-specific
+
+If matched → done.
+
+---
+
+#### 2️⃣ Label semantic match (new logic)
+
+* Extract label text:
+
+```js
+"What is your email?"
+```
+
+* Normalize:
+
+```js
+"what is your email"
+```
+
+* Embed once (cheap)
+* Compare against **precomputed vectors**
+* Pick best match
+* Apply threshold (e.g. 0.82)
+
+If match → done.
+
+---
+
+#### 3️⃣ Otherwise → unresolved
+
+---
+
+## 7️⃣ Why NOT ChromaDB / vector DB
+
+Let’s be very explicit here:
+
+| Requirement        | Vector DB    | Static JSON   |
+| ------------------ | ------------ | ------------- |
+| ~200 vectors       | ❌ Overkill   | ✅ Perfect     |
+| Chrome extension   | ❌ Impossible | ✅ Native      |
+| Offline            | ❌ Hard       | ✅ Easy        |
+| Debuggable         | ❌ Opaque     | ✅ Transparent |
+| Build-time control | ❌            | ✅             |
+
+**Vector DB solves scale problems you don’t have.**
+
+---
+
+## 8️⃣ Final recommended architecture (what you should do)
+
+### ✅ Use your Ollama model
+
+**`mxbai-embed-large:latest`**
+
+### ✅ Generate embeddings once
+
+Dev-time script → JSON file
+
+### ✅ Store embeddings as static asset
+
+`app/shared/labelEmbeddings.json`
+
+### ✅ Runtime = cosine similarity only
+
+No ML inference in extension
+
+### ✅ Keep ELEMENT_VALIDATOR as primary
+
+Label matching is fallback, not replacement
+
+---
+
+## 9️⃣ Answering your original question directly
+
+> “Do you think we should create the embeddings itself and store in something like chromaDB or compatible embedding database while compiling/executing initially the package.json esbuild?”
+
+### ❌ No to ChromaDB
+
+### ✅ Yes to precomputing embeddings
+
+### ✅ Yes to storing them statically
+
+### ❌ No runtime embedding generation
+
+### ❌ No vector database
+
+---
+
+## 10️⃣ Next steps (recommended order)
+
+If you want, next I can:
+
+1. **Design the exact JSON schema**
+2. **Write the Ollama embedding generation script**
+3. **Show how to integrate embeddings into `matchQuestionWithKnownCandidates`**
+4. **Show threshold tuning strategy**
+5. **Add safety rails to avoid false positives**
+
+Tell me **which one you want next**, and I’ll go deep into it.
+
+
+
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+
+Prompt:
+Let's start by designing the JSON schema and embedding generation script. Note that each known question (e.g. Email) can contain array of known labels (like ['What is your email address?', 'Please enter your email.', 'Email Address*']) so create/group schema and/or embeddings according. And how will the embedding generation script execute when I initialize the chrome extension?
+
+Response:
+1️⃣ Canonical Design Goals (lock these first)
+Before schema/code, here are the non-negotiable goals your system will satisfy:
+Each known question = one semantic concept
+Example: EMAIL, FIRST_NAME, PHONE_NUMBER
+Each concept has multiple possible labels
+Embeddings are generated once
+Chrome extension NEVER generates embeddings
+Runtime = fast cosine similarity only
+Label matching is a fallback (element matching stays primary)
+This avoids:
+	runtime ML
+	fragile rules
+	vector DB complexity
+
+
+
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+
+1️⃣ Updated LABEL_DEFINITIONS (Human-editable)
+Design choice
+
+We’ll use tuple pairs:
+
+[labelText: string, thresholdPercent: number]
+
+
+Why:
+
+Explicit
+
+Easy to read
+
+Easy to diff in Git
+
+No extra objects for humans to maintain
+
+app/shared/labelDefinitions.js
+export const LABEL_DEFINITIONS = {
+  EMAIL: {
+    type: 'text',
+    labels: [
+      ['Email', 90],
+      ['Email Address', 92],
+      ['What is your email address?', 85],
+	  ...
+	]
+	...
+  },
+  ...
+}
+
+
+2️⃣ Updated Generated JSON Schema
+app/shared/labelEmbeddings.json
+
+{
+  "version": 1,
+  "model": "mxbai-embed-large:latest",
+  "dimensions": 1024,
+  "generatedAt": "2026-01-10T12:00:00Z",
+  "questions": {
+    "EMAIL": {
+      "type": "text",
+      "labels": [
+        {
+          "text": "Email",
+          "threshold": 0.9,
+          "embedding": [0.0123, -0.9981, "..."]
+        },
+        {
+          "text": "Email Address",
+          "threshold": 0.92,
+          "embedding": [...]
+        },
+        {
+          "text": "What is your email address?",
+          "threshold": 0.85,
+          "embedding": [...]
+        }
+      ]
+    }
+  }
+}
+
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+============================================================================================================================
+
+
+I believe since the page could have max around 20-30 field's label, the overhead cost of calculating embeddings would not significantly rise and should be minimal - what do you think? In such case, I'd prefer heavier model for high quality semantics thus primarily focusing on accuracy i.e. correct identification of label semantic matching. How can I integrate such models into my codebase such that first when extension is initialized, all embeddings for configured labels are precalculated - and for discovered labels are calculated and scored on runtime. Also, since content.js reloads for each webpage and there's constant reload in my automation, I don't want to compute based/config labels embeddings on every load or for new tab. Where should I store and will I have to load it in background.js for persistent and how will my config embeddings refresh incase I modify? 
+
+
+
+
+
+
+
+
+
+
+
+		"scripts": {
+		"ext:background": "esbuild app/background.js --bundle --outfile=dist/background.js --format=esm --minify --target=esnext --watch",
+		"ext:content": "esbuild app/content.js --bundle --outfile=dist/content.js --format=esm --minify --target=esnext --watch",
+		"ext:modules": "esbuild app/modules/ats/*.js --bundle --outdir=dist/modules/ats --format=esm --minify --target=esnext --watch",
+		"ext:gmail": "esbuild app/services/gmail.js --bundle --outfile=dist/services/gmail.js --format=esm --minify --target=esnext --watch",
+		"ext:popup": "esbuild app/ui/popup.js --bundle --outfile=dist/popup.js --format=esm --minify --target=esnext --watch",
+
+		"ext:dev": "npm-run-all --parallel ext:background ext:content ext:modules ext:gmail ext:popup",
+		"web:dev": "npm --prefix web run start",
+
+		"dev": "npm-run-all --parallel ext:dev web:dev"
+	}
+
+	As you see in resolveQuestions, all questions of type:
+
+{
+  label: HTMLElement | null,
+  fields: HTMLElement[],
+  type: string,
+  required: boolean
+}
+
+are validated against known questions using `getKnownQuestions` function. However, currently we are only leveraging the question.fields to find the match. I want to enable label based matching as well (LABEL_VALIDATOR) which is a smart function to contextually/semantically understand the set possible labels for the field type - initially we can start by fuzzy matching like we'd have a list of tuple comsisting of a possible label and threshold, and if atleast one match is found true is returned indicating that since label matched, the question belongs to this category and fill it accordingly (example for question.label = "What is your email?", the validator could check [("Email address", 85)], etc). Feel free to suggest better idea or approach, key is to implement label based identification/matching which is as robust advance and superior as possible. It is important to note that since fields personally belong to the ats and could have different id/attributes, therefore hard coding the 'VALIDATOR' in workdayConfig.js makes perfect sense to not miss known question, however our label validation approach for question matching is common (since labels matching could be global) therefore we'll have to create a shared/common file in relevant folder which holds all validators for each of the question's answer field in our database given below (or atleast implement the mechanism and I'll expand for all questions later). Database looks like:
+
+{
+  "email": "kalpthakkar2001@gmail.com",
+  "password": "K41p@2401",
+  "secondaryPassword": "K41pT#4kkar@2401",
+  "firstName": "Kalp",
+  "lastName": "Thakkar",
+  "phoneExtension": "+1",
+  "phoneNumber": "3864567971",
+  "preferredName": "Kalp",
+  "birthDate": "2001-04-02",
+  "linkedin": "https://www.linkedin.com/in/kalpthakkar",
+  "github": "https://github.com/kalpthakkar",
+  "portfolio": "",
+  "otherURLs": [
+    "https://scholar.google.com/citations?user=g7AQ9N0AAAAJ",
+    ],
+    ...
+
+...
+
+These label validators can be correctly mapped at relevant corresponding question in 'getKnownQuestions', example:
+
+For:
+         {
+                    TYPE: 'text',
+                    VALIDATOR: (el) => el.getAttribute('data-automation-id') == 'email',
+                    VALUE: USER.email,
+                    NOTES: 'Email Address*'
+                },
+
+We can add label validator as well:
+
+         {
+                    TYPE: 'text',
+                    LABEL_VALIDATOR: ...derived form other file (example getLabelValidator(QUESTION.EMAIL <-- enum) or getLabelValidator[QUESTION.EMAIL])
+                    ELEMENT_VALIDATOR: (el) => el.getAttribute('data-automation-id') == 'email', 
+                    VALUE: USER.email,
+                    NOTES: 'Email Address*'
+                },
+
+...
+
+
+So now resolveQuestions can utilize both Label-validator and element-validator for identifying the correct field with more robustness, capability, and scalability.
+
+
+---
+
+Feel free to let me know and expand your thoughts on what's the best system design. You now know what I want to achieve, feel free to suggest better approach and tell me how should I proceed from my existing codebase?
+
+
+
+ApplyPilot/
+.
+├── app
+│   ├── background.js
+│   ├── content.js
+│   ├── scripts
+│   │   └── generateLabelEmbeddings.js
+│   ├── modules
+│   │   ├── ats
+│   │   │   ├── config
+│   │   │   │   └── workdayConfig.js
+│   │   │   ├── utils
+│   │   │   │   └── workdayUtils.js
+│   │   │   ├── greenhouse.js
+│   │   │   └── workday.js
+│   │   └── form
+│   │       ├── formHandlers.js
+│   │       └── formUtils.js
+│   ├── services
+│   │   └── gmail.js
+│   ├── shared
+│   │   ├── config
+│   │   │   └── labelConfig.js
+│   │   ├── utils
+│   │   │   ├── labelUtils.js
+│   │   │   └── utility.js
+│   │   └── labelEmbeddings.json
+│   └── ui
+│       ├── css
+│       │   └── bootstrap.min.css
+│       ├── popup.css
+│       ├── popup.html
+│       └── popup.js
+│
+├── web
+│   ├── node_modules
+│   │   └── ...
+│   ├── public
+│   │   ├── app.js
+│   │   ├── index.html
+│   │   ├── script.js
+│   │   └── style.css
+│   ├── uploads
+│   ├── fileUtils.js
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── server.js
+│   └── userData.json
+│
+├── manifest.json
+├── package.json
+├── package-lock.json
+└── node_modules
+
+
+
+
+🚀 ✅ 🔍 ✍️ ✏️ 🧠 🧼 ❌ 🛠️ 🔧 🔒 📦 🏆 📁 📂 🗂️ 
+💡 🔥 ⚠️ 🧭 👉 🔗 🧪 ▶️ ➡️ ◀️ 🔁 🔄 🟩 🔴 🔹 🔸 🏁
+ 🤔 🏗️ 💻 ⚙️ 🎯 👣 📄 📝 🗣️ 📚 🧩 🪄 🔐 💾 🧮 🕹️ 🚧 
+ 🐛 🔦🍭🧫🌱🌿🌸💎
+ 
+
+🌟 UI feedback (progress, success, errors)
+🧠 User reactions (inputs, confirmations)
+📄 Representing resume or form sections
+✅ Statuses like completed/incomplete
+
+
+🧑‍💼 - Applicant / Professional
+🧑‍💻 - Tech Worker
+🐛 – Bug report
+🐞 – Another symbol for bug
+🪲 – Debug session / Trace log
+🦠 – Microbe
+📦 – Upgrade / Dependency
+🔥 – Hot / Priority
+🧨 – Breaking change
+🧪 – Test / Experimental
+🧬 – Experimental / Branch off
+🪶 - Leaf / Light and Fast
+🧼 – Cleanup
+🧹 - Clean
+🔨 - Build
+🛠️ - Fixes
+🚧 – Work in progress (// 🚧 TODO)
+📝 – Notes / Docs (// 📝 Needs review)
+✨ – Polished / Enhancement
+🧫 – Petri Dish
+🧻 – Temporary fix / Dirty workaround
+🩹 – Patch
+🩺 – Health check / Monitoring
+🔬 – Microscope
+🐍 – Python-related issue (or sneakiness)
+💥 – Crash
+🚨 – Critical alert
+🧭 – Flow control
+🧩 – Modular / Plug-in
+⛓️ – Chained logic / Dependencies
+🔩 – Nut & Bolt
+⚙️ – Gear / Settings
+🪝 – Hook / Event binding
+🟢 - Available / Ready
+🔴 - Error / Blocked
+🟡 - Pending / Incomplete
+🔵 - Active / Ongoing
+❓ - Question
+✅ - Confirm / Proceed
+❌ - Cancel / Error
+⚠️ - Caution / Risky code / Attention
+❗ – Warning
+⏳ - Waiting
+🕐 - Time-sensitive
+🤔 - Thinking
+👀 - Reviewing
+🔄 - In Progress / Refresh / Loading
+↩️ - Return
+➰ – Recursive logic / mental loop
+♻️ - Refactor
+🚀 - Submitted / Launch
+📌 - Important
+📎 - Attachment
+📬 - Sent
+📥 - Received
+➕ – Added
+➖ – Removed
+🗑️ – Deleted file
+🎯 - Target Reached / Match
+⭐️ - Star / Recommend
+🌟 - Highlight / Recommended
+🐳 - Docker
+🐚 - Shell
+🌳 - Tree
+🪜 - Ladder
+💨 - Air / Wind
+🏁 - Complete / Final
+🧱 – Infrastructure / Base code / Base commit
+🧠 - AI Insight / Smart Suggestion
+💬 - Message
+📣 - Announcement / Prompt
+💡 – Insight / Tip
+⛰️ – Mountain
+🌍 – Website / Globe
+📡 – Signal / API ping / Satellite Antenna (for communication/AI systems)
+🌐 – Internet / Web call
+⚙️ – Gear (for machinery or automation)
+🤖 – Robot
+👨‍💻 – Man Technologist
+👩‍💻 – Woman Technologist
+🕵️ – Detective (symbolic for agent or bot behavior)
+🛰️ – Remote system / Satellite service
+🔌 – Connect / Plug-in / Integration 
+🔐 – Auth / Security / Enforce
+🛡️ – Authorization / Security / Protected
+🔑 – Credentials / Key
+📎 – Attachment / Dependency
+🧲 - Magnet 
+🎮 - Controller
+📊 – Analytics
+📈 – Performance gain
+📉 – Performance drop
+🧮 – Calculation
+🗃️ – Structured data
+🗂️ – File Folder / Indexed storage
+📁 - Folder
+📄 - Document
+🧾 - Receipt / Application
+📝 - Write docs / Comment
+🖊️ - Pen
+📋 - Clipboard
+📖 – Reference
+📚 – External docs / Learning
+🗒️ – Notes
+🧊 – Immutable / Frozen
+🖱️ - Mouse click
+🖱️➕🧠 — Mouse click to add to memory
+🖱️📥🧠 — Click to store in memory
+👆➕💾 — Click to save (append)
+🖱️🧠💡 — Click triggering memory or idea
+🖱️➕🗂️ — Click to add to files/data
+
+
+
+😀 Smileys & Emotions
+😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 🙃 😉 😌 😍 🥰 😘 😗 😙 😚
+😋 😛 😝 😜 🤪 🤨 🧐 🤓 😎 🥸 🤩 😏 😒 😞 😔 😟 😕 🙁 😢 😭
+😤 😠 😡 🤬 🤯 😳 🫣 😱 😨 😰 😥 😓 🫤 😶 😐 😑 😬 🙄 🫠
+
+👋 People & Gestures
+👋 🤚 🖐️ ✋ 🖖 👌 🤌 🤏 ✌️ 🤞 🫰 🤟 🤘 🤙 👈 👉 👆 🖕 👇 ☝️
+👍 👎 ✊ 👊 🤛 🤜 👏 🙌 🫶 👐 🤲 🤝 🙏 🫱 🫲 🫳 🫴 💅
+
+🧑‍💼 People & Professions
+👶 🧒 👦 👧 🧑 👨 👩 🧓 👴 👵 🧑‍🦱 🧑‍🦰 🧑‍🦳 🧑‍🦲 🧑‍🏫 🧑‍⚕️ 🧑‍💻 🧑‍🍳
+
+🧠 Body & Health
+🧠 🫀 🫁 🦷 🦴 👁️ 👀 👃 👄 🦵 🦶 👂
+
+🐶 Animals & Nature
+🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐻‍❄️ 🐨 🐯 🦁 🐮 🐷 🐸 🐵 🐔 🐧 🐦
+🦆 🦉 🦇 🐺 🐗 🐴 🐝 🐛 🦋 🐌 🐞 🐜 🪲 🐢 🐍 🦎 🦖 🦕 🐙 🐬 🐳
+
+🍏 Food & Drink
+🍏 🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🥑
+🥦 🥬 🥒 🌽 🥕 🥔 🍠 🧄 🧅 🍞 🥐 🥖 🥨 🥯 🧀 🍗 🍖 🌭 🍔 🍟 🍕
+
+🚌 Travel & Places
+🚗 🚕 🚙 🚌 🚎 🏎️ 🚓 🚑 🚒 🚐 🛻 🚚 🚛 🛵 🛺 🚲 🛴 🚨 🚁 ✈️
+🚀 🛸 🚢 ⛴️ 🛥️ 🚤
+
+⏰ Time & Objects
+⏰ ⌛ ⌚ 🕰️ 🪙 💵 💴 💶 💷 💳 🧾 📱 💻 🖥️ 🖨️ 🖱️ 🖲️ 💽 💾 💿 📀
+
+💡 Symbols & UI
+❤️ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟
+✔️ ❌ ⛔ ⚠️ 🔔 🔕 🔒 🔓 🔑 🗝️ 🔍 🔎 ♻️ ✅ ➕ ➖ ➗ ✖️ ➡️ ⬅️ ⬆️ ⬇️
+
+
+
+
+
+
+
+==================================================
+
+
+/* -----------------------------------------------------------
+ * 🎛️ MULTISELECT: multiselect(element, values, chipContainerEl, chipSelector, maxChips)
+ * -----------------------------------------------------------
+ * 🧾 DESCRIPTION:
+ *   Automates selection of multiple options in a custom or 
+ *   ARIA-compliant multiselect input field. Uses typing and 
+ *   keyboard events to select values, and verifies selection 
+ *   by monitoring chip/tag container.
+ *
+ * 🚀 FEATURES:
+ *   ✅ Focuses input and types candidate values
+ *   ✅ Waits for chips to appear using MutationObserver
+ *   ✅ Supports multiple candidate values in order
+ *   ✅ Respects maxChips limit to avoid over-selection
+ *   ✅ Robust for dynamic forms and custom components
+ *
+ * 🔹 PARAMETERS:
+ *   @param {HTMLElement} element
+ *       → Input field element of the multiselect.
+ *
+ *   @param {string[]} values
+ *       → Array of candidate values to try in order.
+ *
+ *   @param {HTMLElement} chipContainerEl
+ *       → Container element where selected chips/tags appear.
+ *
+ *   @param {string} [chipSelector='ul li']
+ *       → CSS selector to identify individual chips inside container.
+ *
+ *   @param {number|null} [maxChips=null]
+ *       → Optional maximum number of chips to select.
+ *
+ * 💎 RETURNS:
+ *   @return {boolean|null}
+ *       → `true`  → Successfully selected desired chip(s).
+ *       → `null`  → None of the candidate values were accepted.
+ * --------------------------------------------------------- */
+
+
+ /* --------------------------------------------------------------------------
+ * 🧠 dropdownSelect(element, answers, threshold, useAverage)
+ * --------------------------------------------------------------------------
+ * 
+ * Dynamically selects the most appropriate dropdown option by performing
+ * fuzzy string matching between visible dropdown labels and a list of
+ * potential answer candidates.
+ *
+ * The function supports two matching strategies:
+ *
+ * 1️⃣ Independent Best Match (useAverage = false)
+ *    → Selects the single highest similarity score across all
+ *      (answer × option) comparisons.
+ *    → Best when one strong synonym or alias is expected.
+ *
+ * 2️⃣ Averaged Match Strategy (useAverage = true, default)
+ *    → Computes the average similarity score for each option
+ *      across all provided answers.
+ *    → Selects the option with the highest overall semantic alignment.
+ *    → Best for concept-based matching and noisy answer sets.
+ *
+ * Designed for dynamic, ARIA-driven dropdowns commonly found in modern
+ * web apps (e.g., Workday, React Select, custom comboboxes).
+ *
+ * --------------------------------------------------------------------------
+ * 🔧 FEATURES
+ * --------------------------------------------------------------------------
+ *  ✅ Fuzzy string matching (Levenshtein-based similarity)
+ *  ✅ Supports multiple potential answers
+ *  ✅ Configurable threshold-based confidence gating
+ *  ✅ Strategy toggle: aggressive vs semantic matching
+ *  ✅ ARIA-compliant dropdown handling
+ *  ✅ Safe DOM validation & graceful failure handling
+ *
+ * --------------------------------------------------------------------------
+ * 🧩 PARAMETERS
+ * --------------------------------------------------------------------------
+ * @param {HTMLElement|string} element
+ *   → Dropdown container element or selector.
+ *     Can be:
+ *       • <button>
+ *       • container holding a button / combobox
+ *
+ * @param {string[]} answers
+ *   → Array of possible answer strings used for fuzzy matching.
+ *     Example:
+ *       ['United States', 'USA', 'America']
+ *
+ * @param {number|null} [threshold=null]
+ *   → Minimum similarity percentage required to accept a match.
+ *     If null, the best-scoring option is selected regardless of score.
+ *
+ * @param {boolean} [useAverage=true]
+ *   → Matching strategy selector:
+ *       • true  → Average-based ranking (semantic stability)
+ *       • false → Independent best match (aggressive matching)
+ *
+ * --------------------------------------------------------------------------
+ * 💎 RETURNS
+ * --------------------------------------------------------------------------
+ * @returns {Promise<{
+ *   best: { text: string, score: number } | null,
+ *   strategy: 'average' | 'independent',
+ *   matrix: Array<{ answer: string, text: string, score: number }>
+ * }>}
+ *   → Resolves with:
+ *       • `best`     → Selected option & similarity score (or null)
+ *       • `strategy` → Matching strategy used
+ *       • `matrix`   → Full similarity comparison matrix
+ *
+ * --------------------------------------------------------------------------
+ * 🧪 EXAMPLE
+ * --------------------------------------------------------------------------
+ * await dropdownSelect(
+ *   countryDropdown,
+ *   ['United States', 'USA', 'America'],
+ *   75,
+ *   true
+ * );
+ *
+ * --------------------------------------------------------------------------
+ * 📝 NOTES
+ * --------------------------------------------------------------------------
+ * • Does not mutate DOM structure (only triggers user-like events)
+ * • Safe to run in parallel with other form handlers
+ * • Designed to be reused by ATS automation engines
+ * --------------------------------------------------------------------------
+ */
