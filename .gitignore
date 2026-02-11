@@ -43,6 +43,11 @@ server/credentials/
 server/tokens/
 
 # =========================
+# Misc
+# =========================
+speedyapply-content.js
+
+# =========================
 # IDE / Editor
 # =========================
 .vscode/
