@@ -130,6 +130,7 @@ class Jobs:
         self.chain_enabled = False
         self.current_subsequent_execution_failure_count = 0
         self._execution_timer = None
+        self.failure_action = FailureAction(FAILURE_ACTION)
         reset_processing_jobs_on_startup()
         self.breakpoint_notifier = BreakpointNotifier()
 
@@ -197,7 +198,7 @@ class Jobs:
                     print(f"⚠️ Failed to open automation session for {job['key']}")
                     try: update_database(job['key'], execution_result=ExecutionResult.FAILED) # throws error incase failed
                     except: pass
-                    if FAILURE_ACTION == FailureAction.CONTINUE:
+                    if self.failure_action == FailureAction.CONTINUE:
                         current_subsequent_run_jobs_failure_count += 1
                         if current_subsequent_run_jobs_failure_count >= MAX_SUBSEQUENT_RUN_JOBS_FAILURE_ALLOWED:
                             return {'success': False, 'reason': f'faild_to_open_automation_session_with_{MAX_SUBSEQUENT_RUN_JOBS_FAILURE_ALLOWED}_retries'}
@@ -209,18 +210,18 @@ class Jobs:
                     else:
                         automation_controller.is_automation_active = False
                         self.current_job = None
-                        if FAILURE_ACTION == FailureAction.ALERT_STOP:
+                        if self.failure_action == FailureAction.ALERT_STOP:
                             self.breakpoint_notifier.notify_and_keep_playing()
                             return {'success': False, 'reason': 'faild_to_open_automation_session'}
                         else: # FailureAction.SILENT_STOP
                             return {'success': False, 'reason': 'faild_to_open_automation_session'}
 
             else:
-                if FAILURE_ACTION == FailureAction.CONTINUE:
+                if self.failure_action == FailureAction.CONTINUE:
                     automation_controller.is_automation_active = False
                     self.current_job = None
                     continue # resolve next job
-                elif FAILURE_ACTION == FailureAction.ALERT_STOP:
+                elif self.failure_action == FailureAction.ALERT_STOP:
                     self.breakpoint_notifier.notify_and_keep_playing()
                     return {'success': False, 'reason': 'job_without_applyurl_database_error'}
                 else: # FailureAction.SILENT_STOP
@@ -237,14 +238,14 @@ class Jobs:
 
         # Helper
         execution_failure_type: bool = False
+        is_orphan = not self.chain_enabled
 
         # Fix in-flight key (incase mis-compuation or link redirection by worker)
-        if self.chain_enabled: key = self.current_job["key"]
+        if not is_orphan and self.current_job: key = self.current_job["key"]
 
         # --------------------------------------------------
         # Orphan job - on user triggered mannual application's execution completion
         # --------------------------------------------------
-        is_orphan = not self.chain_enabled
         if result == ExecutionResult.PENDING and is_orphan:
             print("🔸 Orphan PENDING ignored")
 
@@ -267,7 +268,7 @@ class Jobs:
         # via /run-jobs to avoid undefined UI / browser state.
         if not is_orphan and result == ExecutionResult.PENDING:
             print(f'⚠️ Recieved Pending ExecutionResult over active chain.')
-            if FAILURE_ACTION == FailureAction.CONTINUE:
+            if self.failure_action == FailureAction.CONTINUE:
                 if self.current_subsequent_execution_failure_count > MAX_SUBSEQUENT_EXECUTION_FAILURES_ALLOWED:
                     automation_controller.is_automation_active = False
                     self.current_job = None
@@ -276,7 +277,7 @@ class Jobs:
             else:
                 automation_controller.is_automation_active = False
                 self.current_job = None
-                if FAILURE_ACTION == FailureAction.ALERT_STOP:
+                if self.failure_action == FailureAction.ALERT_STOP:
                     self.breakpoint_notifier.notify_and_keep_playing()
                 return {"success": False, "reason": "pending_not_allowed_for_active_chain"}
 
@@ -307,7 +308,7 @@ class Jobs:
                     update_database(key, fingerprint=fingerprint, application_status=application_status, execution_result=execution_result, soft_update_payload=soft_data, source=source) # throws error incase failed
                 except Exception as error:
                     print(f'⚠️ Failed to update database for {key} with execution result {execution_result} and application status {application_status}. Error: {error}')
-                    if FAILURE_ACTION == FailureAction.CONTINUE:
+                    if self.failure_action == FailureAction.CONTINUE:
                         if self.current_subsequent_execution_failure_count > MAX_SUBSEQUENT_EXECUTION_FAILURES_ALLOWED:
                             automation_controller.is_automation_active = False
                             self.current_job = None
@@ -316,13 +317,13 @@ class Jobs:
                     else:
                         automation_controller.is_automation_active = False
                         self.current_job = None
-                        if FAILURE_ACTION == FailureAction.ALERT_STOP:
+                        if self.failure_action == FailureAction.ALERT_STOP:
                             self.breakpoint_notifier.notify_and_keep_playing()
                         return {'success': False, 'reason': 'database_updation_failure', 'error': str(error)}
 
             else:
                 print(f'⚠️ Recieved Invalid ExecutionResult: {result}')
-                if FAILURE_ACTION == FailureAction.CONTINUE:
+                if self.failure_action == FailureAction.CONTINUE:
                     if self.current_subsequent_execution_failure_count > MAX_SUBSEQUENT_EXECUTION_FAILURES_ALLOWED:
                         automation_controller.is_automation_active = False
                         self.current_job = None
@@ -331,7 +332,7 @@ class Jobs:
                 else:
                     automation_controller.is_automation_active = False
                     self.current_job = None
-                    if FAILURE_ACTION == FailureAction.ALERT_STOP:
+                    if self.failure_action == FailureAction.ALERT_STOP:
                         self.breakpoint_notifier.notify_and_keep_playing()
                     return {'success': False, 'reason': 'invalid_execution_result', 'error': f'Error: {result} is invalid execution result type enum.'}
 
@@ -357,7 +358,7 @@ class Jobs:
         except Exception as e:
             automation_controller.is_automation_active = False
             print(f"❌ Fatal error setting execution result: {e}")
-            if FAILURE_ACTION == FailureAction.ALERT_STOP:
+            if self.failure_action == FailureAction.ALERT_STOP:
                 self.breakpoint_notifier.notify_and_keep_playing()
             # High level failure always terminates.
             return {"success": False, "reason": "fatal_error_setting_execution_result", "error": str(e)}
