@@ -25,7 +25,7 @@ import {fetchJobDataByKey} from '@shared/utils/atsUtils.js';
 // ============================================================================
 // 📁 GreenHouse Dependencies
 // ============================================================================
-import { SELECTORS, GREENHOUSE_PAGES, KNOWN_QUESTIONS, getKnownQuestionKeys, getLabelEmbeddingKeys } from '@ats/config/greenhouseConfig.js';
+import { SELECTORS, GREENHOUSE_PAGES, KNOWN_QUESTIONS, getKnownQuestionKeys, getLabelEmbeddingKeys } from '@ats/config/leverConfig.js';
 
 
 // ============================================================================
@@ -48,24 +48,15 @@ const containsAny = (str, items) => items.some(item => str?.includes(item));
  * ------------------------------------------------------------------------ */
 export async function getPage() {
     if (
-        el(SELECTORS[GREENHOUSE_PAGES.APPLICATION_PAGE].form)
+        el(SELECTORS[LEVER_PAGES.APPLICATION_PAGE].submitButton)
     ) {
-        return GREENHOUSE_PAGES.APPLICATION_PAGE;
+        return LEVER_PAGES.APPLICATION_PAGE;
     } else if (
-        el(SELECTORS[GREENHOUSE_PAGES.CONFIRMATION_PAGE].confirmationPageIdentifier)
+        el(SELECTORS[LEVER_PAGES.DESCRIPTION_PAGE].descriptionPageIdentifier)
     ) {
-        return GREENHOUSE_PAGES.CONFIRMATION_PAGE;
-    } else if (
-        el(SELECTORS[GREENHOUSE_PAGES.JOB_SEARCH_PAGE].jobSearchPageIdentifier)
-    ) {
-        return GREENHOUSE_PAGES.JOB_SEARCH_PAGE;
+        return LEVER_PAGES.DESCRIPTION_PAGE;
     }
-    else if (
-        el('[id="main"]')?.textContent?.includes("Sorry, but we can't find that page.")
-    ) {
-        return GREENHOUSE_PAGES.PAGE_NOT_EXISTS;
-    }
-    return GREENHOUSE_PAGES.UNKNOWN_PAGE;
+    return LEVER_PAGES.UNKNOWN_PAGE;
 }
 
 /* --------------------------------------------------------------------------
@@ -74,64 +65,14 @@ export async function getPage() {
 export async function initializePage(page) {
     switch (page) {
 
-        case GREENHOUSE_PAGES.APPLICATION_PAGE: {
-
-            if (
-                window.location.hostname.startsWith('job-boards.') 
-                && window.location.hostname.endsWith('.greenhouse.io')
-            ) {
-                const jobId = window.location.pathname?.split('/').pop();
-                window.location.href = `https://boards.greenhouse.io/embed/job_app?token=${jobId}`;
-                await sleep(9); // currently loaded greenshouse module instance will reset
-                return true;
-            }
-
-			/** ------------------------------------------
-			 * 🧬 Sync Work Experience, & Education
-			 ------------------------------------------ */
-
-            // ----- Education -----
-            // Fetch number of containers already open
-            const educationContainerCount = document.querySelectorAll(SELECTORS.APPLICATION_PAGE.educationContainers).length;
-            // Get user background from DB
-            const userEducationHistoryCount = resolveAnswerValue(USER_DB, DB_KEY_MAP.EDUCATION, []).length;
-            // Sync containers with DB edu count
-            await syncContainersSimple({ // Sync education experience containers
-                currentCount: educationContainerCount,
-                targetCount: userEducationHistoryCount - failedEducationDatabaseIdx.size,
-                addButtonSelector: SELECTORS.APPLICATION_PAGE.educationAddButton,
-                deleteButtonsSelector: SELECTORS.APPLICATION_PAGE.educationDeleteButtons
-            });
-
-            // ----- Work Experience -----
-            // Fetch number of containers already open
-            const workExpContainersCount = document.querySelectorAll(SELECTORS.APPLICATION_PAGE.workExperienceContainers).length;
-            // Get user background from DB
-            const userWorkExpCount = resolveAnswerValue(USER_DB, DB_KEY_MAP.WORK_EXPERIENCES, []).length;
-            // Sync containers with DB work count
-            await syncContainersSimple({ // Sync work experience containers
-                currentCount: workExpContainersCount,
-                targetCount: userWorkExpCount - failedWorkExperienceDatabaseIdx.size,
-                addButtonSelector: SELECTORS.APPLICATION_PAGE.workExperienceAddButton,
-                deleteButtonsSelector: SELECTORS.APPLICATION_PAGE.workExperienceDeleteButtons
-            });
-            // Sync: I currently work here (checkboxes)
-            const workContainers = document.querySelectorAll(SELECTORS.APPLICATION_PAGE.workExperienceContainers);
-            for (let workContainerIdx = 0; workContainerIdx < workContainers.length; workContainerIdx++) {
-                const dbAnswerKeyIdx = getDatabaseIndex(workContainerIdx, failedWorkExperienceDatabaseIdx)
-                const fullWorkExperience = resolveAnswerValue(USER_DB, DB_KEY_MAP.WORK_EXPERIENCES, []);
-                const containerEndDate = resolveAnswerValue(fullWorkExperience[dbAnswerKeyIdx], getKey(DB_KEY_MAP.WORK_EXPERIENCES_END_DATE), undefined);
-                if (isCurrentlyWorking(containerEndDate)) {
-                    await click(els(SELECTORS.APPLICATION_PAGE.workExperienceCurrentlyWorkingCheckboxes)[workContainerIdx])
-                }
-            }
+        case LEVER_PAGES.APPLICATION_PAGE: {
 
             /** ------------------------------------------
              * 🗑️ Remove all pre-uploaded resume files
              ------------------------------------------ */
-            for (const deleteFileBtn of els(SELECTORS.APPLICATION_PAGE.deleteFileButtons)) {
-                await click(deleteFileBtn);
-            }
+            // for (const deleteFileBtn of els(SELECTORS.APPLICATION_PAGE.deleteFileButtons)) {
+            //     await click(deleteFileBtn);
+            // }
         }
     }
     return true;
@@ -141,9 +82,7 @@ export async function initializePage(page) {
  * 🔰 initNewIteration()
  * ------------------------------------------------------------------------ */
 export async function initNewIteration() {
-	// Reset container trackers - ensures safe parallel execution. 
-	failedWorkExpContainers.length = 0;
-	failedEducationContainers.length = 0;
+    // pass
 }
 
 /* --------------------------------------------------------------------------
@@ -159,13 +98,8 @@ async function getQuestions({ errorOnly = null, forceSkipValidatorBank = [] } = 
 
         if (!errorOnly) {
             return els(`
-                [id="main_fields"] div.field, 
-                [data-presigned-form="resume"] [type="file"],
-                [data-presigned-form="cover_letter"] [type="file"],
-                [id="custom_fields"] div.field, 
-                [id="demographic_questions"] div.field,
-                [id="eeoc_fields"] div.field,
-                [id="data_compliance"] div.field
+                .application-form ul li.application-question,
+                .application-form .application-additional
             `);
         }
 		const errorAlerts = document.querySelectorAll('[class="field-error-msg"]');
@@ -181,42 +115,38 @@ async function getQuestions({ errorOnly = null, forceSkipValidatorBank = [] } = 
 		return Array.from(questionsWithErrors);
 	}
 
+    
     function getLabelText(question) {
         // ---- Guard: invalid input ---------------------------------------------
         if (!(question instanceof Element)) {
-            return ['', ''];
+            return '';
         }
 
         // ---- Helper: extract text excluding labels that contain inputs ----------
         function getCleanText(container) {
-            if (!(container instanceof Element)) return '';
+            if (container.classList.contains('application-additional')) {
+                return 'Additional information';
+            }
 
-            const clone = container.cloneNode(true);
+            let labelText = container
+                .querySelector('.application-label, .default-label')
+                ?.textContent?.trim() ?? '';
 
-            clone.querySelectorAll('label').forEach(label => {
-                if (label.querySelector('input')) {
-                    label.remove();
-                }
-            });
+            if (
+                labelText === '' &&
+                container.querySelectorAll('label').length === 1
+            ) {
+                labelText = container
+                .querySelector('label')
+                ?.textContent?.trim() ?? '';
+            }
 
-            return clone.textContent?.trim() ?? '';
+            return labelText;
         }
+
 
         // ---- Step 1: locate label/legend ---------------------------------------
-        const tentativeLabel = question.querySelector('label, legend');
-        let rawLabelText = '';
-
-        const hasInputLabel =
-            tentativeLabel?.querySelector('input') instanceof Element;
-
-        const hasMultipleTopLevelLabels =
-            question.querySelectorAll(':scope > label, :scope > legend').length > 1;
-
-        if (hasInputLabel && hasMultipleTopLevelLabels) {
-            rawLabelText = getCleanText(question);
-        } else {
-            rawLabelText = tentativeLabel?.textContent?.trim() ?? '';
-        }
+        const rawLabelText = getCleanText(question)
 
         // ---- Step 2: normalize text safely -------------------------------------
         const normalizedText = String(rawLabelText);
@@ -233,19 +163,11 @@ async function getQuestions({ errorOnly = null, forceSkipValidatorBank = [] } = 
         const finalLabelText =
             withoutPleaseSelect.split('--')[0].trim();
 
-        // ---- Step 3: split main / sub label safely ------------------------------
-        const [mainLabel = '', subLabel = ''] =
-            (finalLabelText ?? '').split(/\?\s*\*\s*\n/);
 
         // ---- Step 4: format return values --------------------------------------
-        let labelText = mainLabel.trim();
-        const subLabelText = subLabel.trim();
+        let labelText = finalLabelText.trim();
 
-        if (subLabelText) {
-            labelText += '? *';
-        }
-
-        return [labelText, subLabelText];
+        return labelText;
     }
 
 
@@ -257,7 +179,15 @@ async function getQuestions({ errorOnly = null, forceSkipValidatorBank = [] } = 
      */
 	function findAssociatedFields(el) {
 
-        const elements = [...el.querySelectorAll('[aria-haspopup="listbox"], [role="combobox"], input, textarea, select')];
+        // 'surveysResponse' are hidden fields
+        const elements = [
+            ...el.querySelectorAll(
+                "input:not([name^='surveysResponse']), \
+                textarea:not([name^='surveysResponse']), \
+                select:not([name^='surveysResponse'])"
+            )
+        ];
+        // const elements = [...el.querySelectorAll('input, textarea, select')];
 
         return elements.filter(el => {
             const style = window.getComputedStyle(el);
@@ -272,16 +202,6 @@ async function getQuestions({ errorOnly = null, forceSkipValidatorBank = [] } = 
 
             if (el.tagName === 'SELECT') {
                 return !el.disabled;
-            }
-
-            // Exclude .select2-focusser or other non-select elements
-            if (
-                el.classList.contains('select2-focusser') 
-                || el.classList.contains('select2-offscreen')
-                || el.classList.contains('select2-input')
-                || el.id.includes('autogen2')
-            ) {
-                return false; // Exclude custom Select2 elements
             }
 
             // Exclude hidden or disabled like.
@@ -464,37 +384,18 @@ async function getQuestions({ errorOnly = null, forceSkipValidatorBank = [] } = 
 	// ---------- MAIN LOGIC ----------
 	const results = [];
 	const questions = findQuestions(errorOnly);
-	const segregationRules = [
-		{
-			name: 'date-text', 
-			test: (el) => el.type === 'text' 
-                && (
-                    ['[start_date]', '[end_date]', '[month]', '[year]'].some(str => el.getAttribute('name')?.includes(str))
-                    || ['DD', 'MM', 'YYYY'].includes(el.getAttribute('placeholder'))
-                ),
-			splitIndividually: true, // each matching element becomes its own group (`false` to keep matches together)
-		}
-	];
-
+	const segregationRules = [];
 	for (const question of questions) {
-        const [labelText, subLabelText] = getLabelText(question);
+        const labelText = getLabelText(question);
         let fields;
-        if (!!question.querySelector(`[id="resume_fieldset"]`) || !!question.querySelector(`[data-field="resume"]`)) {
-            const resumeField = el(`[data-presigned-form="resume"] [type="file"]`);
-            if (!!resumeField) fields = [resumeField]
-        } else if (!!question.querySelector(`[id="cover_letter_fieldset"]`) || !!question.querySelector(`[data-field="cover_letter"]`)) {
-            const coverLetterField = el(`[data-presigned-form="cover_letter"] [type="file"]`);
-            if (!!coverLetterField) fields = [coverLetterField]
-        } else {
-            fields = findAssociatedFields(question);
-        }
+        fields = findAssociatedFields(question);
 		const fieldGroups = createFieldGroups(fields, segregationRules);
 		for (fields of fieldGroups) {
             if (resolveValidElements(fields, forceSkipValidatorBank, 'OR').length) continue;
 			const baseField = selectBaseField(fields);
 			const type = getFieldType(baseField);
             const required = (labelText?.endsWith('*')) ? true : isAnyRequired([question, ...fields]) ? true : false
-			if (fields.length) results.push({ labelText, subLabelText, fields, type, required });
+			if (fields.length) results.push({ labelText, fields, type, required });
 		}
 	}
 	return results;
@@ -2251,7 +2152,7 @@ export async function resolveSecurityCodeQuestion(passCode) {
 
     // Fill Passcode
     const res = await fillInput(
-        el(SELECTORS[GREENHOUSE_PAGES.APPLICATION_PAGE].securityCodeInput), 
+        el(SELECTORS[LEVER_PAGES.APPLICATION_PAGE].securityCodeInput), 
         passCode, 
         {dispatchFocus: true}
     );

@@ -184,7 +184,7 @@ export async function initializePage(page) {
 		}
 	}
 
-	if ([WORKDAY_PAGES.INFO_PAGE, WORKDAY_PAGES.EXP_PAGE, WORKDAY_PAGES.QUESTIONNAIRE_PAGE, WORKDAY_PAGES.VOLUNTARY_DISCLOSURE_PAGE, WORKDAY_PAGES.SELF_IDENTIFICATION_PAGE].includes(page)) {
+	if ([WORKDAY_PAGES.EXP_PAGE, WORKDAY_PAGES.QUESTIONNAIRE_PAGE, WORKDAY_PAGES.VOLUNTARY_DISCLOSURE_PAGE, WORKDAY_PAGES.SELF_IDENTIFICATION_PAGE].includes(page)) {
 		/** ------------------------------------------
 		 * 📟 Remove all chips
 		 ------------------------------------------ */
@@ -1294,6 +1294,42 @@ async function resolveAnswer(question, locators, matchedQuestion, labelEmbedding
 		return null;
 	}
 
+	function resolveBirthDate(locators) {
+		const validLocators = resolveValidElements(
+			locators,
+			[
+				FIELD_VALIDATOR.text,
+				(el) =>
+					el.getAttribute('role') === "spinbutton" &&
+					el.getAttribute('aria-label') != null
+			],
+			'AND'
+		);
+
+		if (!validLocators.length) return null;
+
+		const rawBirthDate = resolveAnswerValue(USER_DB, DB_KEY_MAP.BIRTHDATE, false);
+
+		if (!rawBirthDate) return null;
+
+		const [year, month, day] = rawBirthDate.split('-');
+		const birthDate = new Date(year, month - 1, day);
+
+		switch (validLocators[0].getAttribute('aria-label')) {
+			case 'Day':
+				return getLocalDate('dd', birthDate);
+
+			case 'Month':
+				return getLocalDate('mm', birthDate);
+
+			case 'Year':
+				return getLocalDate('yyyy', birthDate);
+		}
+
+		return null;
+	}
+
+
 	let val;
 	let dbAnswerKey;
 
@@ -1915,7 +1951,11 @@ async function resolveAnswer(question, locators, matchedQuestion, labelEmbedding
 
 	// ----------- QUESTION TYPE MATCH (DIRECT SIGNAL) -----------
 	if ([FIELD_TYPE.TEXT, FIELD_TYPE.DATE].includes(question.type)) {
-		val = resolveTodaysDate(locators);
+		if ((question?.labelText ?? '').toLowerCase().includes('birth')) {
+			val = resolveBirthDate(locators);
+		} else {
+			val = resolveTodaysDate(locators);
+		}
 	}
 	if (val == null && [FIELD_TYPE.FILE].includes(question.type)) {
 		val = await resolveResume({ignoreLLM: true}); // precision not needed for unknown file type.

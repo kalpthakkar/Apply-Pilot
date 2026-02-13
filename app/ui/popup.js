@@ -49,6 +49,7 @@ async function updateUI(tabState = {}) {
 			}
 
 			default: {
+				console.log("TAB STATE 4 CHANGE:::::", tab)
 				document.getElementById('ats').style.display = 'block';
 				document.getElementById('jobboard').style.display = 'none';
 				break;

@@ -56,16 +56,16 @@ TESSERACT_PATH = Path(os.getenv("TESSERACT_PATH", "tesseract"))
 BROWSER_NAME = os.getenv("BROWSER_NAME")
 USE_TOR = (BROWSER_NAME == "Brave") and (os.getenv("USE_TOR", "false").lower() == "true")
 ENFORCE_CONSOLE_PASTING = os.getenv("ENFORCE_CONSOLE_PASTING", "false").lower() == "true"
-# Based on the selected browser, set the appropriate path
-if BROWSER_NAME == "Brave":
-    BROWSER_PATH = Path(os.getenv("BRAVE_PATH", "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"))
-elif BROWSER_NAME == "Chrome":
-    BROWSER_PATH = Path(os.getenv("CHROME_PATH", "C:/Program Files/Google/Chrome/Application/chrome.exe"))
-else:
-    raise ValueError("Unsupported browser selected in the environment configuration.")
 BRAVE_PATH = Path(os.getenv("BRAVE_PATH", "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"))
 CHROME_PATH = Path(os.getenv("CHROME_PATH", "C:/Program Files/Google/Chrome/Application/chrome.exe"))
-# DRIVER_PATH = PROJECT_ROOT / os.getenv("DRIVER_PATH", "config/chromedriver-win64/chromedriver.exe")
+# Based on the selected browser, set the appropriate path
+if BROWSER_NAME == "Brave":
+    BROWSER_PATH = BRAVE_PATH
+elif BROWSER_NAME == "Chrome":
+    BROWSER_PATH = CHROME_PATH
+else:
+    raise ValueError("Unsupported browser selected in the environment configuration.")
+
 
 
 # =========================
