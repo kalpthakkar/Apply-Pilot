@@ -351,44 +351,99 @@ export function getQuestionId(question) {
 }
 
 /* --------------------------------------------------------------------------
+ * 🧾 stringToJson(jsonString)
+ * ------------------------------------------------------------------------ */
+/**
+ * Safely converts a raw JSON string (often extracted from a <script> tag)
+ * into a JavaScript object.
+ *
+ * Handles:
+ *  - null / undefined input
+ *  - HTML-escaped unicode characters (e.g. \u003c, \u003e)
+ *  - Invalid JSON (returns null instead of throwing)
+ *
+ * Example input:
+ *  '{"key":"value"}'
+ *  '{"html":"\\u003cdiv\\u003eHello\\u003c/div\\u003e"}'
+ *
+ * Output:
+ *  { key: "value" }
+ *
+ * @param {string|null|undefined} jsonString
+ * @returns {object|null} Parsed object or null if invalid
+ */
+export function stringToJson(jsonString) {
+  if (!jsonString || typeof jsonString !== 'string') {
+    jsonString = '{}';
+  }
+
+  try {
+    // Decode common escaped HTML unicode sequences
+    const cleaned = jsonString
+      .replace(/\\u003c/g, '<')
+      .replace(/\\u003e/g, '>')
+      .replace(/\\u0026/g, '&');
+
+    return JSON.parse(cleaned);
+  } catch {
+    return null;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
  * 🕙 toTimestampTZ(dateInput)
  * ------------------------------------------------------------------------ */
 /**
- * Converts an arbitrary date string into a UTC timestamptz string.
+ * Converts:
+ *  - epoch (seconds or milliseconds)
+ *  - date strings
+ * into a UTC timestamptz ISO string.
  *
- * Examples:
- *  "2026-02-06"
- *  "Feb 6, 2026"
- *  "2026/02/06"
- *  "2026-02-06T10:30:00"
- *  "2026-02-06T10:30:00Z"
- *
- * Output:
- *  "2026-02-06T00:00:00.000Z"
- *
- * @param {string} dateInput
+ * @param {string|number|null|undefined} dateInput
  * @returns {string|null} ISO timestamptz string or null if invalid
  */
 export function toTimestampTZ(dateInput) {
-  if (!dateInput || typeof dateInput !== 'string') return null;
+  if (dateInput === null || dateInput === undefined) return null;
 
   let date;
 
-  // 1️⃣ ISO-like formats are safest (YYYY-MM-DD or full ISO)
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
-    // Treat as UTC midnight
-    date = new Date(`${dateInput}T00:00:00Z`);
-  } else {
-    // 2️⃣ Let JS try to parse other human-readable formats
-    date = new Date(dateInput);
+  /* ------------------------------------------------------------------ */
+  /* 1️⃣ If it's a number (or numeric string) → treat as epoch         */
+  /* ------------------------------------------------------------------ */
+  const numericValue = Number(dateInput);
+
+  if (Number.isFinite(numericValue)) {
+    // Detect seconds vs milliseconds
+    const ms = numericValue < 1e12 ? numericValue * 1000 : numericValue;
+
+    date = new Date(ms);
   }
 
-  // 3️⃣ Validate result
-  if (isNaN(date.getTime())) {
+  /* ------------------------------------------------------------------ */
+  /* 2️⃣ Otherwise treat as date string                                */
+  /* ------------------------------------------------------------------ */
+  else if (typeof dateInput === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+      // YYYY-MM-DD → force UTC midnight
+      date = new Date(`${dateInput}T00:00:00Z`);
+    } else {
+      date = new Date(dateInput);
+    }
+  } else {
     return null;
   }
 
-  // 4️⃣ Normalize to UTC timestamptz
+  /* ------------------------------------------------------------------ */
+  /* 3️⃣ Validate                                                        */
+  /* ------------------------------------------------------------------ */
+  if (!date || isNaN(date.getTime())) {
+    return null;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 4️⃣ Return ISO UTC                                                 */
+  /* ------------------------------------------------------------------ */
   return date.toISOString();
 }
 

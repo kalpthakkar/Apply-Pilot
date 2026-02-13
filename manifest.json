@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Apply Pilot",
+  "key": "MD8BIjANCgYJKj9IPz8NCgEBAQUAAz8BDwAwPwENCgI/AQEAPz9hCz8/InhtPz8/Rz8ODQoMUj8BP2EtP3s/P1twPz8/PxVITT8/FBo/PwQ/Kw0KAxA/P0A/Pwg/Pz8/ERgHaDJHMz8iPz8pTj8nZEw/DQo/P0UzPz8/dRg/VT95Tj0/Pz8/Pz8/IlcuPz8/Pwg/ND8eP1k/ej8TGXY/Pz8jPz8/QD80Pz8/Pz8/NH5XP0c/Pz8/P3E/YlMVIFAAP1Y/Vkx5Pz8/ZD9cPz8/JUI/bT9ILEg/VD9oPz8/Ij8/dD8/Px09MVg/Pz8/P0U/Pz8pPz8/DQo/K1c/Ll4dals/PxI/DQo/P0ofA01LP3swKxM/G1wfP0VdcBd7bT96Pw0KJz8/Lz8/PwIDAQABDQo=",
   "version": "1.0",
   "description": "A modular, scalable automation assistant for browser tasks.",
   "permissions": [

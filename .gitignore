@@ -5,6 +5,12 @@
 Thumbs.db
 
 # =========================
+# Extension Keys
+# =========================
+ApplyPilot.pem
+ApplyPilot.crx
+
+# =========================
 # Node.js
 # =========================
 node_modules/

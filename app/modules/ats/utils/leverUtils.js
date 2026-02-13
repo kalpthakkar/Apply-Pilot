@@ -1,7 +1,7 @@
 // ============================================================================
 // 📁 Global Dependencies
 // ============================================================================
-import { sleep, getTabState, notifyTabState, throwIfAborted, resolveValidElements, getJobId, getKey, getLocalDate, resolveAnswerValue, getNearestAddress, getBestResume, toTimestampTZ, isCurrentlyWorking } from '@shared/utils/utility.js';
+import { sleep, getTabState, notifyTabState, throwIfAborted, resolveValidElements, getJobId, getKey, getLocalDate, resolveAnswerValue, getNearestAddress, getBestResume, stringToJson, toTimestampTZ, isCurrentlyWorking } from '@shared/utils/utility.js';
 import { DB_KEY_MAP } from '@shared/config/config.js';
 
 // ============================================================================
@@ -407,34 +407,23 @@ async function getQuestions({ errorOnly = null, forceSkipValidatorBank = [] } = 
 async function getJobDetails() {
 
     const tabStore = await getTabState();
-    const jobDetails = {}
+    const jobDetails = {};
+    const jobData = stringToJson(el(`[data-qa="additional-cards"] input`)?.getAttribute('value'));
 
-    // Step 1: Extract the raw JSON string from the script tag
-    let jsonString = el(`[type="application/ld+json"]`)?.innerHTML ?? '{}';
-
-    // Step 2: Decode any HTML entities (like \u003c or \u003e)
-    jsonString = jsonString?.replace(/\\u003c/g, '<')?.replace(/\\u003e/g, '>');
-
-    // Step 3: Parse the string into a JavaScript object
-    let jobData = JSON.parse(jsonString);
-
-    // Step 4: Use the parsed object
-    
     // JobTitle
-    const title = jobData?.title || tabStore?.jobData?.title;
+    const title = el(`.posting-header h2`)?.textContent || el(`head [property="og:title"]`)?.getAttribute(`content`) || tabStore?.jobData?.title;
     if (title) jobDetails['title'] = title
 
     // Company Name
-    const company = jobData?.hiringOrganization?.name || tabStore?.jobData?.company
+    const company = el(`.main-header-logo img`)?.getAttribute('alt')?.split(' logo')[0]?.trimEnd() || tabStore?.jobData?.company
     if (company) jobDetails['company'] = company
 
     // Job Location
-    let locations = [
-        [
-            el(`[id="header"] [class="location"]`)?.textContent?.trim(),
-            jobData?.jobLocation?.address?.addressLocality
-        ].filter(Boolean).join(' • ')
-    ];
+    let locations = [];
+    let location = el(`.posting-header .posting-categories .location`)?.textContent;
+    if (location) {
+        locations.push(location)
+    }
     if (Array.isArray(tabStore?.jobData?.locations)) {
         locations.push(...tabStore.jobData.locations.filter(Boolean));
     }
@@ -442,19 +431,24 @@ async function getJobDetails() {
     
     // Posting Date
     // const jobPostedDate = jobData?.datePosted
-    const publishTimeISO = toTimestampTZ(jobData?.datePosted) || tabStore?.publishTimeISO
+    const publishTimeISO = toTimestampTZ(jobData?.createdAt) || tabStore?.publishTimeISO
     if (publishTimeISO) jobDetails['publishTimeISO'] = publishTimeISO
 
     // Assuming jobData.description contains HTML string
-    let jobDescriptionHTML = jobData?.description;
-    let tempDiv = document.createElement("div"); // Create a temporary element to parse the HTML string
-    tempDiv.innerHTML = jobDescriptionHTML;
-    const jobDescriptionText = tempDiv.textContent || tempDiv.innerText || tabStore?.jobData?.summary; // Extract the plain text
-    if (jobDescriptionText) jobDetails['description'] = jobDescriptionText
+    const jobSummary = el(`head [property="og:description"]`)?.getAttribute(`content`)
+    if (jobSummary) jobDetails['summary'] = jobSummary
+    const jobDescription = jobSummary || tabStore?.jobData?.summary; // Extract the plain text
+    if (jobDescription) jobDetails['description'] = jobDescription
 
-    if (tabStore?.jobData?.employmentType) jobDetails['employmentType'] = tabStore?.jobData?.employmentType
+    // Employment Type
+    const employmentType = el(`.posting-header .posting-categories .commitment`)?.textContent?.replace(/[\s/]+$/, '') || tabStore?.jobData?.employmentType;
+    if (employmentType) jobDetails['employmentType'] = employmentType
+    
+    // Work Modal
+    const workModal = el(`.posting-header .posting-categories .workplaceTypes`)?.textContent?.replace(/[\s/]+$/, '') || tabStore?.jobData?.workModel;
+    if (workModal) jobDetails['workModel'] = workModal;
+
     if (tabStore?.jobData?.seniority) jobDetails['seniority'] = tabStore?.jobData?.seniority
-    if (tabStore?.jobData?.workModel) jobDetails['workModel'] = tabStore?.jobData?.workModel
     if (tabStore?.jobData?.skills) jobDetails['skills'] = tabStore?.jobData?.skills
     if (tabStore?.jobData?.minSalary) jobDetails['minSalary'] = tabStore?.jobData?.minSalary
     if (tabStore?.jobData?.maxSalary) jobDetails['maxSalary'] = tabStore?.jobData?.maxSalary
@@ -473,7 +467,14 @@ async function getJobDetails() {
 export async function initExecutionPayload() {
     const tabStore = await getTabState()
     if (tabStore?.jobId == null) {
-        const applyURL = window.location.href;
+        let applyURL;
+        if ((el(`.posting-header a.postings-btn`)?.getAttribute('href') ?? '').endsWith('/apply')) {
+            applyURL = el(`.posting-header a.postings-btn`)?.getAttribute('href');
+        } else if ((el(`[property="og:url"]`)?.getAttribute('content') ?? '').endsWith('/apply')) {
+            applyURL = el(`[property="og:url"]`)?.getAttribute('content');
+        } else {
+            applyURL = window.location.href;    
+        }
         const jobDetails = await getJobDetails();
 
         const soft_data = {
@@ -481,7 +482,9 @@ export async function initExecutionPayload() {
             title: jobDetails?.title,
             company: jobDetails?.company,
             locations: jobDetails?.locations,
-            // description: jobDetails?.description,
+            summary: jobDetails?.summary,
+            employmentType: jobDetails?.employmentType,
+            workModel: jobDetails?.workModel,
             publishTimeISO: jobDetails?.publishTimeISO,
         }
         const jobId = await getJobId(applyURL);
