@@ -615,26 +615,28 @@ if __name__ == "__main__":
     # Initialize ScreenUtility with screen resolution
     screen_util = ScreenUtility(screen_resolution=(1920, 1080))
 
-    screen_util.set_tesseract_path(r'D:\Kalp\Software\tesseract-ocr\tesseract.exe')
+    screen_util.set_tesseract_path(r'C:\Program Files\Tesseract-OCR\tesseract.exe')
 
-    time.sleep(4)
-    screen_util.split_screen(3, 3)
-    is_connected_img_path = os.path.join(SERVER_ROOT, "modules","utils","assets","tor_connected_successfully.png")
-    if screen_util.is_image_present(image_path=is_connected_img_path, region="Row1_Col1", confidence=0.75):
-        print("CONNECTED")
-    else:
-        print("NOT CONNECTED")
-    # print(screen_util.is_text_present(text="Tor connected successfully", region="Row1_Col1", fuzzy=True, threshold=60))
-
-
+    # time.sleep(4)
     # screen_util.split_screen(3, 3)
-    # if screen_util.is_text_present(text="Verify you are human", region="Row2_Col2", fuzzy=True, threshold=80):
-    #     print("Human Verification Asked")
-    #     img_path = os.path.join(SERVER_ROOT, "modules","utils","assets","human_verification_checkbox.png")
-        # if screen_util.is_image_present(image_path=img_path, region="Row2_Col2", confidence=0.75):
-        #     screen_util.click_center_of_image(image_path=img_path, region="Row2_Col2")
-        # else:
-        #     print("Verification Checkbox image not found")
+    # is_connected_img_path = os.path.join(SERVER_ROOT, "modules","utils","assets","tor_connected_successfully.png")
+    # if screen_util.is_image_present(image_path=is_connected_img_path, region="Row1_Col1", confidence=0.75):
+    #     print("CONNECTED")
+    # else:
+    #     print("NOT CONNECTED")
+    # # print(screen_util.is_text_present(text="Tor connected successfully", region="Row1_Col1", fuzzy=True, threshold=60))
+
+
+    screen_util.split_screen(3, 3)
+    if screen_util.is_text_present(text="Verify you are human", region="Row2_Col2", fuzzy=True, threshold=80):
+        print("Human Verification Asked")
+        img_path = os.path.join(SERVER_ROOT, "modules","utils","assets","human_verification_checkbox.png")
+        if screen_util.is_image_present(image_path=img_path, region="Row2_Col2", confidence=0.75):
+            screen_util.click_center_of_image(image_path=img_path, region="Row2_Col2")
+        else:
+            print("Verification Checkbox image not found")
+    else:
+        print("Not present")
 
 
     # time.sleep(5)

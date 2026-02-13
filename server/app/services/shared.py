@@ -1,7 +1,7 @@
 # app/services/shared.py
 import time
 import pyautogui
-from config.env_config import BROWSER_PATH, CHROME_PATH
+from config.env_config import BROWSER_PATH, CHROME_PATH, ENFORCE_CONSOLE_PASTING
 from modules.browser.browser_utils import BrowserUtils
 from modules.chatgpt.chatgpt import ChatGPT
 from modules.utils.pyautogui_utils import ScreenUtility
@@ -20,6 +20,7 @@ class AutomationController:
         self.last_active_service = None
 
         self.chatgpt = ChatGPT(browser=BrowserUtils(BROWSER_PATH))
+        self.chatgpt.enforce_console_pasting = ENFORCE_CONSOLE_PASTING
         self.automation_browser = BrowserUtils(CHROME_PATH)
 
     def goto_automation_desktop(self) -> None:

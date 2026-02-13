@@ -55,6 +55,7 @@ TESSERACT_PATH = Path(os.getenv("TESSERACT_PATH", "tesseract"))
 # Get the browser name from the environment variable
 BROWSER_NAME = os.getenv("BROWSER_NAME")
 USE_TOR = (BROWSER_NAME == "Brave") and (os.getenv("USE_TOR", "false").lower() == "true")
+ENFORCE_CONSOLE_PASTING = os.getenv("ENFORCE_CONSOLE_PASTING", "false").lower() == "true"
 # Based on the selected browser, set the appropriate path
 if BROWSER_NAME == "Brave":
     BROWSER_PATH = Path(os.getenv("BRAVE_PATH", "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"))

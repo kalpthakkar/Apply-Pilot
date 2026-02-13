@@ -141,6 +141,7 @@ class ChatGPT:
             self.browser = browser
         else:
             self.browser = BrowserUtils()
+        self.enforce_console_pasting = False
         self.is_session_already_open = False
         self.reset_occured = False
         self.initialize_promptChain_script()
@@ -497,47 +498,21 @@ class ChatGPT:
             self.promptChain_script = self.promptChain_script.replace(old, new)
 
     def open_chatgpt(self, search_incognito: bool = False, search_tor = False) -> bool:
+        # Init Configurations
+        if self.enforce_console_pasting: self.browser.enforce_console_pasting = True
         # Open ChatGPT URL
+        if search_tor: result = self.browser.open_url_in_tor(CHATGPT_URL, retry=2)
+        elif search_incognito: result = self.browser.open_incognito(CHATGPT_URL, dynamic_loading=True)
+        else: result = self.browser.open_url(CHATGPT_URL, dynamic_loading=True)
+        # Sync and Return
         self.is_session_already_open = True
-        if search_tor: return self.browser.open_url_in_tor(CHATGPT_URL, retry=2)
-        elif search_incognito: return self.browser.open_incognito(CHATGPT_URL, dynamic_loading=True)
-        else: return self.browser.open_url(CHATGPT_URL, dynamic_loading=True)
+        self.browser.enforce_console_pasting = False
+        return result
 
     def close_session(self) -> None:
         self.browser.close_tab()
         self.is_session_already_open = False
         self.reset_occured = True
-
-    # def convert_jsonic_response_to_dict(self, response: str) -> dict | None:
-
-    #     def normalize_markdown_links(text: str) -> str:
-    #         """
-    #         Converts all Markdown-style links [text](url) in the string to just 'text'.
-    #         """
-    #         if not isinstance(text, str):
-    #             return text
-    #         # This regex replaces all [text](url) occurrences with 'text'
-    #         return re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
-  
-    #     # Base return
-    #     if not isinstance(response, str): return response if isinstance(response, dict) else None
-        
-    #     # Clean up the response by removing the JSON block markers and unwanted characters
-    #     cleaned_response = re.sub(r"```[a-zA-Z]*\s*", "", response).replace("```", "").strip()
-    #     cleaned_response = cleaned_response.replace("\xa0", " ").replace("\r\n", "").replace("\n", "")
-        
-    #     # Response not Jsonic -> return `None`
-    #     is_response_jsonic, response = safe_load_json(cleaned_response)
-    #     if not is_response_jsonic or not isinstance(response, dict):
-    #         return None
-       
-    #     # Normalize Markdown links in all string values
-    #     for k, v in response.items():
-    #         if isinstance(v, str):
-    #             response[k] = normalize_markdown_links(v)
-            
-    #     # Return
-    #     return response
 
     def convert_jsonic_response_to_dict(self, response: str) -> dict | None:
         

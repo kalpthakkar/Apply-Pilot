@@ -44,6 +44,7 @@ class BrowserUtils:
         self.is_Panel_Open = []  # Tracks DevTools panel state per tab
         self.tor_session_ongoing_count = 0
         self.verifyDOMChangeOnToggle = False
+        self.enforce_console_pasting = True
     
     def _init_browser_name(self, path: str) -> BrowserName:
         if path.endswith('chrome.exe'):
@@ -338,6 +339,8 @@ class BrowserUtils:
         """
         
         inject_script_end_wait: float = 0.5 # Before closing panel
+        if self.enforce_console_pasting:
+            inject_script_end_wait += 6
         domStable_script = domStable_script.replace("__MAX_WAIT__", str(max_wait))
         domStable_script = domStable_script.replace("__CHECK_INTERVAL__", str(check_interval))
         domStable_script = domStable_script.replace("__REQUIRED_STABLE_CHECKS__", str(consecutive_stable_checks))
@@ -345,6 +348,7 @@ class BrowserUtils:
 
         # Inject script into browser
         if not self.inject_script(domStable_script, endWait=inject_script_end_wait, closePanel=True):
+            print("Failed to inject script in dynamic loader")
             return False
 
         # Sub-Process for Dynamic Polling
@@ -358,12 +362,15 @@ class BrowserUtils:
                 return False # polling ends if not returning None
 
         # Run the dynamic polling to check if page loading is complete
+        print("Max Wait::", max_wait)
         result = dynamic_polling(
             max_wait=max_wait,
             sub_processes={
                 clipboard_check: 1    # run every 1 second
             }
         )
+
+        print("Dynamic loader returning:", True if result is not None else False)
 
         # Return
         return True if result is not None else False
@@ -479,6 +486,10 @@ class BrowserUtils:
 
             self.is_Panel_Open[-1] = desired_state
             time.sleep(endWait)
+
+        if desired_state and self.enforce_console_pasting:
+            self.enable_keyboard_pasting(panel_already_open=True)
+        
         return True
 
     def get_panel_state(self, index: int = -1) -> bool:
@@ -487,8 +498,9 @@ class BrowserUtils:
             raise IndexError("No tabs open.")
         return self.is_Panel_Open[index]
 
-    def enable_keyboard_pasting(self) -> None:
-        self.toggle_panel('open', endWait=1.5)
+    def enable_keyboard_pasting(self, panel_already_open = False) -> None:
+        if not panel_already_open:
+            self.toggle_panel('open', endWait=1.5)
         pyperclip.copy('console.log("Hello World");')
         pyautogui.hotkey("ctrl", "v") # Triggers paste warning
         time.sleep(1)
