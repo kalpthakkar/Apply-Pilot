@@ -93,12 +93,10 @@ async function processApplicationFlow(page) {
 		domChangeChecker.setThreshold(threshold);
 
 		console.log("🖱️ Click Save & Continue. In 15 sec")
-		await sleep(15) // Only to Debug
+		// await sleep(15) // Only to Debug
 		await click(el(SELECTORS.APPLICATION_PAGE.submitButton));
 		// await sleep(60); // Only to Debug
 		await sleep(2); // mandatory to reflect state change before entering waitUntil
-
-        console.log("YOO 111")
 
 		// Dynamic wait until
 		await waitUntil(
@@ -115,8 +113,6 @@ async function processApplicationFlow(page) {
 			),
 			{timeout: 10}
 		);
-
-        console.log("YOO 222")
 	}
 
 	/** ----------------------------------------------------------------------------
@@ -138,7 +134,6 @@ async function processApplicationFlow(page) {
 	console.log("ALL UNRESOLVED QUESTIONS:::", unresolvedQuestions);
 	
 	const threshold = clamp((questions.length * 5)/100, 0.05, 0.50);
-	console.log("--- 1")
 	await submitAndWait(threshold);
     if (isResumeProcessing()) {
         console.log("⚠️ Resume Still Processing.");
@@ -147,7 +142,6 @@ async function processApplicationFlow(page) {
 		console.groupEnd();
 		return false; // Terminate
     }
-	console.log("--- 2")
     if (isHCaptchaVisible()) {
         console.log("⚠️ Unable to resolve captcha.");
 		console.log('👎 Returning FALSE'); // Returning FALSE
@@ -155,13 +149,11 @@ async function processApplicationFlow(page) {
 		console.groupEnd();
 		return false; // Terminate
     }
-	console.log("--- 3")
 	if (hasUnsetRequiredQuestions()) { // Fallback 1
 		console.log("⚠️ Errors Detected. Performing one last resolution over errors")
 		await resolveQuestions(page, {errorOnly: true, maxIterations: 3, maxAttemptsPerQuestion: 3});
 		await submitAndWait(threshold);
 	}
-	console.log("--- 4")
     if (isHCaptchaVisible()) {
         console.log("⚠️ Unable to resolve captcha.");
 		console.log('👎 Returning FALSE'); // Returning FALSE
@@ -169,7 +161,6 @@ async function processApplicationFlow(page) {
 		console.groupEnd();
 		return false; // Terminate
     }
-	console.log("--- 5")
 	if (hasUnsetRequiredQuestions()) { // Fallback 2
 		console.log("⚠️ Errors Detected. Performing one last resolution over errors")
 		await resolveQuestions(page, {errorOnly: true, maxIterations: 3, maxAttemptsPerQuestion: 3});

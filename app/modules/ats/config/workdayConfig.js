@@ -416,7 +416,7 @@ export const KNOWN_QUESTIONS = {
     WORK_EXP_JOB_TITLE: {
         type: FIELD_TYPE.TEXT,
         dbAnswerKey: DB_KEY_MAP.WORK_EXPERIENCES_JOB_TITLE,
-        value: db => db.workExperiences.map(w => w.jobTitle),
+        value: db => resolveAnswerValue(db,getKey(DB_KEY_MAP.WORK_EXPERIENCES_JOB_TITLE),undefined),
         elementValidator: (el) => el.id?.startsWith('workExperience') && el.id?.endsWith('jobTitle'),
         action: KNOWN_QUESTION_ACTION.RESOLVE,
         notes: 'Job Title*'
@@ -424,7 +424,7 @@ export const KNOWN_QUESTIONS = {
     WORK_EXP_COMPANY: {
         type: FIELD_TYPE.TEXT,
         dbAnswerKey: DB_KEY_MAP.WORK_EXPERIENCES_COMPANY_NAME,
-        value: db => db.workExperiences.map(w => w.company),
+        value: db => resolveAnswerValue(db,getKey(DB_KEY_MAP.WORK_EXPERIENCES_COMPANY_NAME),undefined),
         elementValidator: (el) => el.id?.startsWith('workExperience') && el.id?.endsWith('companyName'),
         action: KNOWN_QUESTION_ACTION.RESOLVE,
         notes: 'Company*'
@@ -432,7 +432,7 @@ export const KNOWN_QUESTIONS = {
     WORK_EXP_LOCATION: {
         type: FIELD_TYPE.TEXT,
         dbAnswerKey: DB_KEY_MAP.WORK_EXPERIENCES_LOCATION,
-        value: db => db.workExperiences.map(w => w.location),
+        value: db => resolveAnswerValue(db,getKey(DB_KEY_MAP.WORK_EXPERIENCES_LOCATION),undefined),
         elementValidator: (el) => el.id?.startsWith('workExperience') && el.id?.endsWith('location'),
         action: KNOWN_QUESTION_ACTION.RESOLVE,
         notes: 'Location'

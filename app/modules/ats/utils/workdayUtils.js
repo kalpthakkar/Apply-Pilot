@@ -868,7 +868,7 @@ async function formManager(
 
 			if (
 				question.type === FIELD_TYPE.TEXT
-				&& payload.remainingAttempts <= 1 
+				&& payload.remainingAttempts <= 2 
 				&& (
 					question?.label?.textContent.includes('salary')
 					|| question?.label?.textContent.includes('compensation')
@@ -876,6 +876,7 @@ async function formManager(
 			) {
 				// Type: Array[] of strings <- contains extracted number in their base form.
 				const normalizedNumberStrings = normalizedValue.match(/\d[\d,]*/g)?.map(n => n.replace(/,/g, '')) ?? [];
+				console.log("[Salary Question] normalizedNumberStrings:", normalizedNumberStrings);
 				if (normalizedNumberStrings.length) { // numbers exist in answer
 					normalizedValue = normalizedNumberStrings[0]
 				} else { // numbers does not exist in answer

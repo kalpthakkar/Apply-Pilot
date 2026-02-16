@@ -781,10 +781,10 @@ export async function startExecution(payload = {}) {
 		console.log('[Workday] ✅ Automation completed successfully.');
 	} catch (err) {
 		if (err.name === 'AbortError') {
-			console.log('[Greenhouse] 🚫 Execution aborted by user.');
+			console.log('[Workday] 🚫 Execution aborted by user.');
 			notifyTabState({ running: false, state: 'aborted', executionResult: 'aborted' }, { updateUI: false });
 		} else {
-			console.error('[Greenhouse] Fatal automation error:', err);
+			console.error('[Workday] Fatal automation error:', err);
 		}
 	} finally {
 		clearExecutionController();
@@ -801,5 +801,5 @@ export async function startExecution(payload = {}) {
  */
 export function stopExecution() {
   abortExecution();
-  console.log('[Greenhouse] 🛑 Abort signal dispatched.');
+  console.log('[Workday] 🛑 Abort signal dispatched.');
 }

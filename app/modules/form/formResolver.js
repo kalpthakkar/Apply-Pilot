@@ -664,6 +664,7 @@ export async function resolveATSQuestions(
 			'input[type="number"]',
 			'input[type="text"]',
 			'textarea',
+			'select',
 			'[contenteditable="true"]',
 			'button[aria-haspopup="listbox"]'
 		],

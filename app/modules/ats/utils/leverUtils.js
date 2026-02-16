@@ -1445,14 +1445,19 @@ async function formManager(
                         threshold: threshold, 
                         useAverage: false,
                         blacklist: blacklist,
+                        forceRandomSelectionOnOverflow: (question.required) ? true : false, 
                         mode: 'select', 
                     }
                 );
                 if (!res?.success) {
+                    const options = res?.options ?? (Array.isArray(res?.ranked) ? [...new Set(res.ranked.map(r => r.text))] : []);
+                    if (!question.required && options.length > 100) {
+                        return { status: EXECUTION_STATUS.OK };
+                    }
                     return {
                         status: EXECUTION_STATUS.ERROR,
                         reason: "select_failed",
-                        meta: { value: normalizedAnswers, options: res?.options ?? (Array.isArray(res?.ranked) ? [...new Set(res.ranked.map(r => r.text))] : []) }
+                        meta: { value: normalizedAnswers, options: options }
                     };
                 }
                 return { status: EXECUTION_STATUS.OK };

@@ -1268,7 +1268,7 @@ export async function dropdownSelect(dropdownLocator, answers, { threshold = 100
 /* =========================================================
 * 👇 Select
 * ======================================================= */
-export async function selectField(selectLocator, answers, {threshold = 100, useAverage = false, blacklist = ["Select...", "Please select", "Select One", "--"], selectAtLeastOne = false, mode = 'select', mutationTimeout = 150} = {}) {
+export async function selectField(selectLocator, answers, {threshold = 100, useAverage = false, blacklist = ["Select...", "Please select", "Select One", "--"], selectAtLeastOne = false, forceRandomSelectionOnOverflow = false, mode = 'select', mutationTimeout = 150} = {}) {
 
     /* =========================================================
      * Resolve <select> element
@@ -1314,6 +1314,10 @@ export async function selectField(selectLocator, answers, {threshold = 100, useA
     if (!options.length) {
         console.warn('❌ selectField(): no selectable options found');
         return { success: false, best: null, ranked: [], options: [] };
+    }
+
+    if (options.length > 100 && forceRandomSelectionOnOverflow) {
+        selectAtLeastOne = true;
     }
 
     const optionTexts = options.map(o => o.text);
