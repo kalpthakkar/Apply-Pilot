@@ -26,6 +26,7 @@ import {fetchJobDataByKey} from '@shared/utils/atsUtils.js';
 // 📁 Lever Dependencies
 // ============================================================================
 import { SELECTORS, LEVER_PAGES, KNOWN_QUESTIONS, getKnownQuestionKeys, getLabelEmbeddingKeys } from '@ats/config/leverConfig.js';
+import { select2Multiselect } from '../../form/formHandlers';
 
 
 // ============================================================================

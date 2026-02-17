@@ -1542,12 +1542,15 @@ export async function select2Multiselect(
     comboInput.focus();
     comboInput.click();
 
-    const listId = comboInput.getAttribute("aria-controls");
+    // const listId = comboInput.getAttribute("aria-controls");
+    // if (!listId) {
+    //     console.warn("❌ select2Multiselect(): aria-controls missing");
+    //     return { success: false, selected: [], ranked: [], options: [] };
+    // }
 
-    if (!listId) {
-        console.warn("❌ select2Multiselect(): aria-controls missing");
-        return { success: false, selected: [], ranked: [], options: [] };
-    }
+    const selectElIdx = [...document.querySelectorAll('select[multiple]')].indexOf(selectEl)
+    const listId = 'select2List' + selectElIdx;
+
 
     /* =========================================================
      * Resolve dropdown listbox
@@ -1563,6 +1566,11 @@ export async function select2Multiselect(
             mutationTimeout
         }
     );
+
+    console.log("listId:", listId);
+    console.log("document.getElementById(listId):", document.getElementById(listId));
+    console.log("Direct listEl:", document.getElementById(listId));
+    console.log("Resilient listEl:", listEl);
 
     if (!listEl) {
         console.warn("❌ select2Multiselect(): listbox not found");
@@ -1590,7 +1598,6 @@ export async function select2Multiselect(
                 return true;
             });
     }
-
 
     let options = extractOptions();
 
