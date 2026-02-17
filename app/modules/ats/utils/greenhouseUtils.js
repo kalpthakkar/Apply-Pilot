@@ -1914,14 +1914,19 @@ async function formManager(
                         threshold: threshold, 
                         useAverage: false,
                         blacklist: blacklist,
+                        forceRandomSelectionOnOverflow: (question.required) ? true : false,
                         mode: 'select', 
                     }
                 );
                 if (!res?.success) {
+                    const options = res?.options ?? (Array.isArray(res?.ranked) ? [...new Set(res.ranked.map(r => r.text))] : []);
+                    if (!question.required && options.length > 100) {
+                        return { status: EXECUTION_STATUS.OK };
+                    }
                     return {
                         status: EXECUTION_STATUS.ERROR,
                         reason: "select_failed",
-                        meta: { value: normalizedAnswers, options: res?.options ?? (Array.isArray(res?.ranked) ? [...new Set(res.ranked.map(r => r.text))] : []) }
+                        meta: { value: normalizedAnswers, options: options }
                     };
                 }
                 return { status: EXECUTION_STATUS.OK };
@@ -1965,7 +1970,8 @@ async function formManager(
                         useAverage: false, 
                         blacklist: ["Select one or more", "Select...", "Please select"], 
                         selectAtLeastOne: (question.required) ? true : false, 
-                        maxSelections: null
+                        maxSelections: null,
+                        mode: 'select'
                     }
                 );
                 console.log('Multiselect Response:', res);
@@ -2175,6 +2181,10 @@ async function getOptions(
 		}
 		case FIELD_TYPE.SELECT: {
 			options = (await selectField( locators, [], { mode: 'inspect' } )).options;
+			break;
+		}
+        case FIELD_TYPE.MULTISELECT: {
+			options = (await select2Multiselect( locators, [], { mode: 'inspect' } )).options;
 			break;
 		}
 		case FIELD_TYPE.DROPDOWN: {
