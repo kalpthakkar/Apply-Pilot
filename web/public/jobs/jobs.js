@@ -141,7 +141,15 @@ function renderJobs() {
 
     const card = document.createElement("div");
     card.className =
-        "relative bg-white rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-md transition";
+      "relative bg-white rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 hover:cursor-pointer transition duration-200";
+        
+    // Store job data on element
+    card.dataset.job = JSON.stringify(d);
+
+    // Open modal when clicking card
+    card.addEventListener("click", () => {
+      openModal(JSON.parse(card.dataset.job));
+    });
 
     card.innerHTML = `
       <!-- Execution Result Indicator -->
@@ -172,25 +180,29 @@ function renderJobs() {
       <div class="mt-4 flex justify-between items-center gap-2 text-sm">
 
         <div class="flex gap-2">
-          <button
-            class="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
-            onclick='openModal(${JSON.stringify(d)})'
-          >
-            Open
-          </button>
-          <a
-            href="${d.applyUrl}"
-            target="_blank"
-            class="apply-btn px-3 py-1 rounded border hover:bg-gray-100"
-            onclick="event.stopPropagation()"
-            data-job-id="${row.key}"
-          >
-            ${
-                d.applicationStatus === 'applied' 
-                ? `<span class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i>Applied</span>` 
-                : 'Apply'
-            }
-          </a>
+          ${
+              d.applicationStatus === 'applied' 
+              ? `
+              <a
+                href="${d.applyUrl}"
+                target="_blank"
+                class="apply-btn px-3 py-1 rounded border hover:bg-gray-100"
+                onclick="event.stopPropagation()"
+                data-job-id="${row.key}"
+              >
+                <span class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i>Applied</span>
+              </a>` 
+              : `
+              <a
+                href="${d.applyUrl}"
+                target="_blank"
+                class="apply-btn px-3 py-1 rounded border bg-blue-600 text-white hover:bg-blue-700"
+                onclick="event.stopPropagation()"
+                data-job-id="${row.key}"
+              >
+              Apply
+              </a>`
+          }
 
 
             <!-- Mark as Applied Button (only if not yet applied) -->
@@ -202,23 +214,39 @@ function renderJobs() {
 
         </div>
 
-
-        
         ${
             d.applicationStatus !== 'applied' 
             ? `
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-3 gap-4">
+              <button 
+                class="text-gray-400 hover:text-gray-600 custom-tooltip copy-btn" 
+                onclick="event.stopPropagation(); copyJobId('${row.key}')"
+                data-job-id="${row.key}" 
+                data-tooltip="Copy Job ID"
+                onclick="copyJobId('${row.key}')"
+              >
+                <i class="fa-solid fa-copy"></i>
+              </button>
               <button class="text-gray-400 hover:text-gray-600 custom-tooltip not-interested-btn" data-job-id="${row.key}" data-tooltip="Not Interested">
                 <i class="fa-solid fa-eye-slash"></i>
               </button>
-              <button class="text-gray-500 hover:text-red-700" onclick="deleteJob('${row.key}')">
+              <button class="text-gray-500 hover:text-red-700" onclick="event.stopPropagation(); deleteJob('${row.key}')">
                 <i class="fa-solid fa-trash mr-2"></i>
               </button>
             </div>
             ` 
             : `
-            <div class="grid">
-              <button class="text-gray-500 hover:text-red-700" onclick="deleteJob('${row.key}')">
+            <div class="grid grid-cols-2 gap-4">
+              <button 
+                class="text-gray-400 hover:text-gray-600 custom-tooltip copy-btn" 
+                onclick="event.stopPropagation(); copyJobId('${row.key}')"
+                data-job-id="${row.key}" 
+                data-tooltip="Copy Job ID"
+                onclick="copyJobId('${row.key}')"
+              >
+                <i class="fa-solid fa-copy"></i>
+              </button>
+              <button class="text-gray-500 hover:text-red-700" onclick="event.stopPropagation(); deleteJob('${row.key}')">
                 <i class="fa-solid fa-trash mr-2"></i>
               </button>
             </div>
@@ -274,6 +302,23 @@ async function fetchJobsCount() {
   }
 }
 
+/* ======================================================
+   COPY JOB ID
+====================================================== */
+function copyJobId(jobId) {
+  navigator.clipboard.writeText(jobId)
+    .then(() => {
+      const btn = document.querySelector(`[data-job-id="${jobId}"].copy-btn`);
+      if (!btn) return;
+
+      const originalTooltip = btn.getAttribute("data-tooltip");
+      btn.setAttribute("data-tooltip", "Copied!");
+      
+      setTimeout(() => {
+        btn.setAttribute("data-tooltip", originalTooltip);
+      }, 1500);
+    });
+}
 
 /* ======================================================
    PUBLISHED TIME DESCRIPTION
@@ -399,7 +444,19 @@ function openModal(job) {
     </div>
   `;
 
-    modal.classList.add("show");
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeModal();
+    }
+  });
+
+  modal.classList.add("show");
 }
 
 function closeModal() {
@@ -480,6 +537,8 @@ const progressErrorNotifications = document.getElementById("undoNotifications");
 document.addEventListener("click", async (e) => {
   const btn = e.target.closest(".not-interested-btn");
   if (!btn) return;
+
+  e.stopPropagation();
 
   const jobKey = btn.dataset.jobId;
   const jobIndex = jobs.findIndex(j => j.key === jobKey);
@@ -639,6 +698,39 @@ function resetAndReload() {
   fetchJobsCount();
   fetchJobs();
 }
+
+const searchInput = document.getElementById("searchInput");
+const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+// Show/hide clear icon
+searchInput.addEventListener("input", (e) => {
+  const value = e.target.value.trim();
+
+  filters.search = value;
+  resetAndReload();
+
+  if (value.length > 0) {
+    clearSearchBtn.classList.remove("hidden");
+  } else {
+    clearSearchBtn.classList.add("hidden");
+  }
+
+  clearSearchBtn.classList.toggle("opacity-0", value.length === 0);
+  clearSearchBtn.classList.toggle("pointer-events-none", value.length === 0);
+
+});
+
+// Clear search
+clearSearchBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  searchInput.value = "";
+  filters.search = "";
+  clearSearchBtn.classList.add("hidden");
+
+  resetAndReload();
+});
 
 document.getElementById("searchInput").oninput = e => {
   filters.search = e.target.value.trim();

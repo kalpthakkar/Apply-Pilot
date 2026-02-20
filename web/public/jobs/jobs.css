@@ -690,7 +690,7 @@ button {
   top: -2.5rem; /* above the element */
   left: 50%;
   transform: translateX(-50%) translateY(0);
-  background: rgba(255, 255, 255, 0.15); /* semi-transparent glass */
+  background: rgba(255, 255, 255, 0.95); /* semi-transparent glass */
   backdrop-filter: blur(8px); /* frosted glass blur */
   -webkit-backdrop-filter: blur(8px);
   color: #000;
